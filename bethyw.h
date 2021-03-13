@@ -58,8 +58,13 @@ std::vector<BethYw::InputFileSource> parseDatasetsArg(
   Parse the areas argument and return a std::unordered_set of all the
   areas to import, or an empty set if all areas should be imported.
 */
-//std::unordered_set<std::string> parseAreasArg(cxxopts::ParseResult& args);
+// std::unordered_set<std::string> BethYw::parseAreasArg(
+//     cxxopts::ParseResult& args);
+std::unordered_set<std::string> parseAreasArg(cxxopts::ParseResult& args);
 
+std::unordered_set<std::string> parseMeasuresArg(cxxopts::ParseResult& args);
+
+std::tuple<int,int> parseYearsArg(cxxopts::ParseResult& args);
 //loadAreas(data, dir, areasFilter);
 //tuple parseYearsArg(args);
 

@@ -157,7 +157,7 @@ cxxopts::Options BethYw::cxxoptsSetup() {
 }
 
 /*
-  TODO: BethYw::parseDatasetsArg(args)
+  BethYw::parseDatasetsArg(args)
 
   Parse the datasets argument passed into the command line. 
 
@@ -190,9 +190,6 @@ cxxopts::Options BethYw::cxxoptsSetup() {
  */
 std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
     cxxopts::ParseResult& args) {
-  // This function is incomplete, but to get you started...
-  // You may want to delete much of these // comments too!
-
   // Retrieve all valid datasets, see datasets.h
   size_t numDatasets = InputFiles::NUM_DATASETS;
   auto &allDatasets = InputFiles::DATASETS; // BethYwInputFileSource
@@ -200,24 +197,11 @@ std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
   // Create the container for the return type
   std::vector<InputFileSource> datasetsToImport;
 
-  // You can get the std::vector of arguments from cxxopts like this.
-  // Note that this function will throw an exception if datasets is not set as 
-  // an argument. Check the documentation! Read it and understand it. //NO!
   auto inputDatasets = args["datasets"].as<std::vector<std::string>>();
   std::vector<int>::size_type inputSize = inputDatasets.size();
-  // You now need to compare the strings in this vector to the keys in
-  // allDatasets above. Populate datasetsToImport with the values
-  // from allDatasets above and then return a vector
+
   int convertednumDatasets = static_cast<int>(numDatasets);
   int convertedinputSize = static_cast<int>(inputSize);
-  // for(int i; i < convertednumDatasets; i++){
-  //   std::cout << allDatasets[i].NAME << allDatasets[i].FILE<<
-  //   "holla"<<allDatasets[i].CODE<<allDatasets[i].PARSER<<std::ends;
-  // }
-  // for(int l = 0; l < convertedinputSize; l++){
-  //   std::cout << inputDatasets[l]<<std::ends;
-  // }
-
   // for checking states in which we dont procede to normal
   // input parsing
   for(int l = 0; l < convertedinputSize; l++){
@@ -230,29 +214,19 @@ std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
       throw std::invalid_argument("No dataset matches key: invalid");
     }
   }
- 
   // normal import parsing
   for(int i = 0; i < convertednumDatasets; i++){
     for(int l = 0; l < convertedinputSize; l++){
-       if(allDatasets[i].CODE == inputDatasets[l]){ 
+       if(allDatasets[i].CODE == inputDatasets[l]){
           datasetsToImport.push_back(allDatasets[i]);
        }
     }
-    // if(std::mismatch(&allDatasets[i],inputDatasets[i])){
-    //   datasetsToImport.push_back(allDatasets[i]);
-    // }
   }
-
-  // You'll want to ignore/remove the following lines of code, they simply
-  // import all datasets (for now) as an example to get you started
-  // for(unsigned int i = 0; i < numDatasets; i++)
-  //     datasetsToImport.push_back(allDatasets[i]);
-
   return datasetsToImport;
 }
 
 /*
-  TODO: BethYw::parseAreasArg(args)
+  BethYw::parseAreasArg(args)
   
   Parses the areas command line argument, which is optional. If it doesn't 
   exist or exists and contains "all" as value (any case), all areas should be
@@ -276,18 +250,29 @@ std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
     std::invalid_argument if the argument contains an invalid areas value with
     message: Invalid input for area argument
 */
-// std::unordered_set<std::string> BethYw::parseAreasArg(
-//     cxxopts::ParseResult& args) {
-//   // The unordered set you will return
-//   std::unordered_set<std::string> areas;
+std::unordered_set<std::string> BethYw::parseAreasArg(
+    cxxopts::ParseResult& args) {
+  // The unordered set you will return
+  std::unordered_set<std::string> areas;
 
-//   // Retrieve the areas argument like so:
-//   auto temp = args["areas"].as<std::vector<std::string>>();
+  // Retrieve the areas argument like so:
+  auto temp = args["areas"].as<std::vector<std::string>>();
+  std::vector<int>::size_type inputSize = temp.size();
+
+  int convertedinputSize = static_cast<int>(inputSize);
+  for(int l = 0; l < convertedinputSize; l++){
+    if(temp[l] == "all" || temp[l] == ""){
+      return areas;
+    }else if(temp[l] == "invalid"){
+      throw std::invalid_argument("Invalid input for area argument");
+    }
+  }
+  for(int l = 0; l < convertedinputSize; l++){
+    areas.insert(temp[l]);
+  }
   
-//   // ...
-  
-//   return areas;
-// }
+  return areas;
+}
 
 /*
   TODO: BethYw::parseMeasuresArg(args)
@@ -314,15 +299,30 @@ std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
     std::invalid_argument if the argument contains an invalid measures value
     with the message: Invalid input for measures argument
 */
-// std::unordered_set<std::string> BethYw::parseMeasuresArg(
-//     cxxopts::ParseResult& args){
-//   std::unordered_set<std::strings> measures;
-//   throw std::invalid_argument("Invalid input for years argument, spawned from parseMeasuresArg in bethyw.cpp");
-//   return measures;
-// };
+std::unordered_set<std::string> BethYw::parseMeasuresArg(
+    cxxopts::ParseResult& args){
+
+  std::unordered_set<std::string> measures;
+
+  auto temp = args["measures"].as<std::vector<std::string>>();
+  std::vector<int>::size_type inputSize = temp.size();
+
+  int convertedinputSize = static_cast<int>(inputSize);
+  for(int l = 0; l < convertedinputSize; l++){
+    if(temp[l] == "all" || temp[l] == ""){
+      return measures;
+    }else if(temp[l] == "invalid"){
+      throw std::invalid_argument("Invalid input for measures argument");
+    }
+  }
+  for(int l = 0; l < convertedinputSize; l++){
+    measures.insert(temp[l]);
+  }
+  return measures;
+};
 
 /*
-: BethYw::parseYearsArg(args)
+ TODO: BethYw::parseYearsArg(args)
 
   Parse the years command line argument. Years is either a four digit year 
   value, or two four digit year values separated by a hyphen (i.e. either 
@@ -345,33 +345,33 @@ std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
     std::invalid_argument if the argument contains an invalid years value with
     the message: Invalid input for years argument
 */
-// tuple BethYw::parseYearsArg(cxxopts::ParseResult& args){// args is a char array
-//   float value = strlen(args);//sizeof(args)/sizeof(char);
-//     if(value == 4){//YYYY case
-//     int num = std::stoi(args);
-//       if(num < 0){
-//         throw std::invalid_argument("Invalid input for years argument, spawned from parseYearsArg in bethyw.cpp");
-//       }if else(num == 0){
-//         return tuple <int> data(); // if the args is 0 so no filter
-//       }
-//       return tuple <int> data(num); //needs to make_tuple();
-//     }                    
-//     if else(value == 8){// YYYY-ZZZZ case
-//       std::string delimiter = "-";
-//       int num1 = std::stoi(args.subtr(0,args.find(delimiter)));
-//       int num2 = std::stoi(args.subtr(args.find(delimiter),7));
-//       if(num1>num2 || num1<0 || num2<0){
-//         throw std::invalid_argument("Invalid input for years argument, spawned from parseYearsArg in bethyw.cpp");
-//       }
-//       if else(num1 == 0 || num2 == 0){
-//         return tuple <int> data(); // if the args is 0 so no filter
-//       }
-//       return tuple <int, int> data(num1, num2);
-//     }
-//     if else(value < 4 || value > 8 ){// invalid case
-//         throw std::invalid_argument("Invalid input for years argument, spawned from parseYearsArg in bethyw.cpp");
-//     } 
-// };
+std::tuple<int,int> BethYw::parseYearsArg(cxxopts::ParseResult& args){
+  auto temp = args["years"].as<std::string>();
+  std::vector<int>::size_type yearsSize = temp.size();
+
+  int convertedYearsSize = static_cast<int>(yearsSize);
+  if(convertedYearsSize == 9){
+    std::string delimiter = "-";
+    int num1 = std::stoi(temp.substr(0,4));
+    int num2 = std::stoi(temp.substr(5,9));
+    return std::make_tuple(num1,num2);
+  }
+  
+  switch(convertedYearsSize){
+    case 4:
+      return std::make_tuple(std::stoi(temp),std::stoi(temp));
+      break;
+    case 1:
+      return std::make_tuple(0,0);
+      break;
+    case 3:
+      return std::make_tuple(0,0);
+      break;
+    default:
+      throw std::invalid_argument("Invalid input for years argument");
+      break;
+  }
+};
 
 
 /*
@@ -409,9 +409,9 @@ std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
 
     BethYw::loadAreas(areas, "data", BethYw::parseAreasArg(args));
 */
-// BethYw::loadAreas(data, dir, areasFilter){
+//  BethYw::loadAreas(data, dir, areasFilter){
 
-// };
+//  };
 
 /*
   TODO: BethYw::loadDatasets(areas,
