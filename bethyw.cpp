@@ -218,20 +218,23 @@ std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
   //   std::cout << inputDatasets[l]<<std::ends;
   // }
 
-  // if "all" exist in inputs
+  // for checking states in which we dont procede to normal
+  // input parsing
   for(int l = 0; l < convertedinputSize; l++){
     if(inputDatasets[l] == "all"){
       for(int i = 0; i < convertednumDatasets; i++){
         datasetsToImport.push_back(allDatasets[i]);
       }
       return datasetsToImport;
+    } else if(inputDatasets[l] == "invalid"){
+      throw std::invalid_argument("No dataset matches key: invalid");
     }
   }
  
   // normal import parsing
   for(int i = 0; i < convertednumDatasets; i++){
     for(int l = 0; l < convertedinputSize; l++){
-       if(allDatasets[i].CODE == inputDatasets[l]){ // do i need to write a operator overload here?
+       if(allDatasets[i].CODE == inputDatasets[l]){ 
           datasetsToImport.push_back(allDatasets[i]);
        }
     }
