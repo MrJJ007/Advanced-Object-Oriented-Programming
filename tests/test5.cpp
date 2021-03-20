@@ -32,7 +32,7 @@ SCENARIO( "a source file can be opened and read", "[InputFile][existent]" ) {
 
     THEN( "an InputFile instance can be constructed" ) {
 
-      REQUIRE_NOTHROW( InputFile(test_file) );
+      REQUIRE_NOTHROW( InputFile(test_file) );//this line
 
     } // THEN
 

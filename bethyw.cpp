@@ -26,6 +26,7 @@
 */
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <tuple>
 #include <unordered_set>
@@ -76,10 +77,10 @@ int BethYw::run(int argc, char *argv[]) {
   //std::string dir = args["dir"].as<std::string>() + DIR_SEP;
 
   // Parse other arguments and import data
-   auto datasetsToImport = BethYw::parseDatasetsArg(args);
-  // auto areasFilter      = BethYw::parseAreasArg(args);
-  // auto measuresFilter   = BethYw::parseMeasuresArg(args);
-  // auto yearsFilter      = BethYw::parseYearsArg(args);
+  auto datasetsToImport = BethYw::parseDatasetsArg(args);
+  auto areasFilter      = BethYw::parseAreasArg(args);
+  auto measuresFilter   = BethYw::parseMeasuresArg(args);
+  auto yearsFilter      = BethYw::parseYearsArg(args);
 
   //Areas data = Areas();
 
@@ -210,10 +211,23 @@ std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
         datasetsToImport.push_back(allDatasets[i]);
       }
       return datasetsToImport;
-    } else if(inputDatasets[l] == "invalid"){
-      throw std::invalid_argument("No dataset matches key: invalid");
     }
   }
+  //checking if inputs are vaild
+  bool is_contained;
+  for(int i = 0; i < convertedinputSize; i++){
+    for(int l = 0; l < convertednumDatasets; l++){
+       if(inputDatasets[i] == allDatasets[l].CODE){
+          is_contained = true;
+          
+       }
+    }
+    if(!is_contained){
+      throw std::invalid_argument("No dataset matches key: "+inputDatasets[i]);
+    }
+    is_contained = false;
+  }
+  
   // normal import parsing
   for(int i = 0; i < convertednumDatasets; i++){
     for(int l = 0; l < convertedinputSize; l++){
@@ -263,14 +277,13 @@ std::unordered_set<std::string> BethYw::parseAreasArg(
   for(int l = 0; l < convertedinputSize; l++){
     if(temp[l] == "all" || temp[l] == ""){
       return areas;
-    }else if(temp[l] == "invalid"){
+    }else if(temp[l] == "invalid"){// this will need to change
       throw std::invalid_argument("Invalid input for area argument");
     }
   }
   for(int l = 0; l < convertedinputSize; l++){
     areas.insert(temp[l]);
   }
-  
   return areas;
 }
 
@@ -311,7 +324,7 @@ std::unordered_set<std::string> BethYw::parseMeasuresArg(
   for(int l = 0; l < convertedinputSize; l++){
     if(temp[l] == "all" || temp[l] == ""){
       return measures;
-    }else if(temp[l] == "invalid"){
+    }else if(temp[l] == "invalid"){// this will need to change
       throw std::invalid_argument("Invalid input for measures argument");
     }
   }
@@ -322,7 +335,7 @@ std::unordered_set<std::string> BethYw::parseMeasuresArg(
 };
 
 /*
- TODO: BethYw::parseYearsArg(args)
+ BethYw::parseYearsArg(args)
 
   Parse the years command line argument. Years is either a four digit year 
   value, or two four digit year values separated by a hyphen (i.e. either 
@@ -348,31 +361,61 @@ std::unordered_set<std::string> BethYw::parseMeasuresArg(
 std::tuple<int,int> BethYw::parseYearsArg(cxxopts::ParseResult& args){
   auto temp = args["years"].as<std::string>();
   std::vector<int>::size_type yearsSize = temp.size();
-
   int convertedYearsSize = static_cast<int>(yearsSize);
-  if(convertedYearsSize == 9){
-    std::string delimiter = "-";
-    int num1 = std::stoi(temp.substr(0,4));
-    int num2 = std::stoi(temp.substr(5,9));
-    return std::make_tuple(num1,num2);
-  }
-  
-  switch(convertedYearsSize){
-    case 4:
-      return std::make_tuple(std::stoi(temp),std::stoi(temp));
-      break;
-    case 1:
-      return std::make_tuple(0,0);
-      break;
-    case 3:
-      return std::make_tuple(0,0);
-      break;
-    default:
+
+  if(convertedYearsSize == 4){// YYYY case
+    if(is_number(temp)){// is number
+      int num = std::stoi(temp);
+      if(num<2022 && num>1900){// valid year value
+        return std::make_tuple(std::stoi(temp),std::stoi(temp));
+      }else{
       throw std::invalid_argument("Invalid input for years argument");
-      break;
+      }
+    }else{
+      throw std::invalid_argument("Invalid input for years argument");
+    }
+
+  }else if(convertedYearsSize == 9){ // YYYY-YYYY case
+    std::string string1 = temp.substr(0,4);
+    std::string string2 = temp.substr(5,9);
+    if(is_number(string1) && is_number(string2) ){// is number
+      int num1 = std::stoi(string1);
+      int num2 = std::stoi(string2);
+      if(num1 < 2022 && num2 <2022 && num1 > 1900 && num2 >1900){// valid year value
+        return std::make_tuple(num1, num2);
+      }else{
+      throw std::invalid_argument("Invalid input for years argument");
+      }
+    }else{
+      throw std::invalid_argument("Invalid input for years argument");
+    }
+
+  }else if(convertedYearsSize == 3){ // 0-0 case
+    std::string string1 = temp.substr(0,1);
+    std::string string2 = temp.substr(2,2);
+    if(is_number(string1) && is_number(string2)){// is number
+      return std::make_tuple(std::stoi(string1),std::stoi(string2));
+    }else{
+      throw std::invalid_argument("Invalid input for years argument");
+    }
+
+  }else if(convertedYearsSize == 1){// 0 case
+    if(is_number(temp)){// is number
+      return std::make_tuple(std::stoi(temp),std::stoi(temp));
+    }else{
+      throw std::invalid_argument("Invalid input for years argument");
+    }
+  }else{
+    throw std::invalid_argument("Invalid input for years argument");
   }
 };
-
+// this should probs be in a different class but whatever
+bool BethYw::is_number(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
 
 /*
   TODO: BethYw::loadAreas(areas, dir, areasFilter)
@@ -408,10 +451,34 @@ std::tuple<int,int> BethYw::parseYearsArg(cxxopts::ParseResult& args){
     Areas areas();
 
     BethYw::loadAreas(areas, "data", BethYw::parseAreasArg(args));
+    std::istream &is,
+    const BethYw::SourceDataType &type,
+    const BethYw::SourceColumnMapping &cols)
 */
-//  BethYw::loadAreas(data, dir, areasFilter){
+// void BethYw::loadAreas(Area areas,std::string dir,std::unordered_set<std::string> areasFilter){
+//   //fstream file = fstream();
+//   //file.open("dir");
 
-//  };
+//     InputFile input("data/popu1009.json");
+//     auto is = input.open();
+
+//     auto cols = InputFiles::DATASETS["popden"].COLS;
+
+//     auto areasFilter = BethYw::parseAreasArg();
+//     auto measuresFilter = BethYw::parseMeasuresArg();
+//     auto yearsFilter = BethYw::parseMeasuresArg();
+
+//     Areas data = Areas();
+//     areas.populate(
+//       is,
+//       DataType::WelshStatsJSON,
+//       cols,
+//       &areasFilter,
+//       &measuresFilter,
+//       &yearsFilter);
+//   //Areas::populate(file,,);
+//   //InputFile file;
+// };
 
 /*
   TODO: BethYw::loadDatasets(areas,

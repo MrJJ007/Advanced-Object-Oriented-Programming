@@ -35,7 +35,7 @@ namespace BethYw {
 /*
   TODO: Enter your student number here!
 */
-const std::string STUDENT_NUMBER = "987654";
+const std::string STUDENT_NUMBER = "958804";
 
 /*
   Run Beth Yw?, parsing the command line arguments and acting upon them.
@@ -65,6 +65,10 @@ std::unordered_set<std::string> parseAreasArg(cxxopts::ParseResult& args);
 std::unordered_set<std::string> parseMeasuresArg(cxxopts::ParseResult& args);
 
 std::tuple<int,int> parseYearsArg(cxxopts::ParseResult& args);
+
+bool is_number(const std::string& s);
+
+//void loadAreas(Area area,std::string dir,std::unordered_set<std::string> areasFilter);
 //loadAreas(data, dir, areasFilter);
 //tuple parseYearsArg(args);
 

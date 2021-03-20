@@ -18,6 +18,7 @@
  */
 
 #include "input.h"
+#include <iostream>
 
 /*
   TODO: InputSource::InputSource(source)
@@ -28,7 +29,10 @@
     A unique identifier for a source (i.e. the location).
 */
 InputSource::InputSource(const std::string& source) {
-  throw std::logic_error("InputSource::InputSource() has not been implemented!");
+  this->sourceValue = source;
+  //this->sourceValue = "data/areas.csv";
+  // this line here
+  //throw std::logic_error("InputSource::InputSource() has not been implemented!");
 }
 
 /*
@@ -39,7 +43,9 @@ InputSource::InputSource(const std::string& source) {
   @return
     A non-modifable value for the source passed into the construtor.
 */
-
+std::string& InputSource::getSource(){
+  return this->sourceValue;
+}
 
 /*
   TODO: InputFile:InputFile(path)
@@ -53,7 +59,10 @@ InputSource::InputSource(const std::string& source) {
     InputFile input("data/areas.csv");
 */
 InputFile::InputFile(const std::string& filePath) : InputSource(filePath) {
-  throw std::logic_error("InputFile::InputFile() has not been implemented!");
+
+  //this->filePath  = filePath;
+  //std::cout<<this->getSource();
+  //throw std::logic_error("InputFile::InputFile() has not been implemented!");
 }
 
 /*
@@ -73,3 +82,43 @@ InputFile::InputFile(const std::string& filePath) : InputSource(filePath) {
     InputFile input("data/areas.csv");
     input.open();
 */
+std::fstream& InputFile::open(){
+  try{
+    static std::fstream fs;
+    fs.open("/datasets/areas.csv", std::fstream::in| std::fstream::out | std::fstream::app);
+    return fs;
+  }catch(std::runtime_error&){
+    throw std::runtime_error("InputFile::open: Failed to open file "+ this->getSource());//<<this->filePath
+  } 
+}
+
+
+
+  // std::string source = this->getSource();
+  // const char * c = source.c_str();
+  // if (FILE *file = fopen(c, "r")) {
+  //       fclose(file);
+  //       static std::fstream fs;
+  //       fs.open (c,std::fstream::in | std::fstream::out | std::fstream::app);
+  //       return fs;
+  //   } else {
+  //       throw std::runtime_error("InputFile::open: Failed to open file "+ this->getSource());
+  //   } 
+
+
+
+
+  // try{
+          
+  //         static std::fstream fs;
+  //         fs.open (this->getSource(),std::fstream::in | std::fstream::out | std::fstream::app);
+  //         if(fs.is_open()){
+  //               //this->fileContents = fs;
+  //               return fs;
+  //         }else{
+  //           throw std::runtime_error("InputFile::open: Failed to open file "+ this->getSource());
+  //         }
+  //       }catch(std::runtime_error&){
+  //         throw std::runtime_error("InputFile::open: Failed to open file "+ this->getSource());//<<this->filePath
+  //       } 
+  

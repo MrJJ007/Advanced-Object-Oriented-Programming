@@ -35,8 +35,13 @@
   and perhaps additional operators you may wish to overload.
 */
 class InputSource {
+  private:
+    std::string sourceValue = "Error parsing InputSource";
 protected:
   InputSource(const std::string& source);
+public:
+  
+  std::string& getSource();
 };
 
 /*
@@ -48,8 +53,12 @@ protected:
   to overload.
 */
 class InputFile : public InputSource {
+  private:
+    std::fstream fileContents;
+    std::string filePath;
 public:
   InputFile(const std::string& filePath);
+  std::fstream& open();
 };
 
 #endif // INPUT_H_
