@@ -25,7 +25,7 @@ SCENARIO( "a source file can be opened and read", "[InputFile][existent]" ) {
     return std::ifstream(path).is_open();
   };
 
-  const std::string test_file = "datasets/areas.csv";
+  const std::string test_file = "../datasets/areas.csv";
   REQUIRE( file_exists(test_file) );
 
   GIVEN( "a valid file path" ) {
@@ -55,7 +55,7 @@ SCENARIO( "a source file can be opened and read", "[InputFile][existent]" ) {
 
       AND_THEN( "the stream remains open after open() returns" ) {
 
-        std::istream &stream = input.open();
+        std::istream &stream = input.open(); //proof we need to use istream
 
         REQUIRE_NOTHROW( stream.seekg(1, stream.beg) );
         REQUIRE_FALSE( stream.eof() );

@@ -43,7 +43,9 @@
     Measure measure(codename, label);
 */
 Measure::Measure(std::string codename, const std::string &label) {
-  throw std::logic_error("Measure::Measure() has not been implemented!");
+  this->codename = codename;
+  this->label = label;
+  //throw std::logic_error("Measure::Measure() has not been implemented!");
 }
 
 /*
@@ -65,7 +67,9 @@ Measure::Measure(std::string codename, const std::string &label) {
     ...
     auto codename2 = measure.getCodename();
 */
-
+std::string Measure::getCodename(){
+  return this->codename;
+}
 
 /*
   TODO: Measure::getLabel()
@@ -86,7 +90,9 @@ Measure::Measure(std::string codename, const std::string &label) {
     ...
     auto label = measure.getLabel();
 */
-
+std::string Measure::getLabel(){
+  return this->label;
+}
 
 /*
   TODO: Measure::setLabel(label)
@@ -102,7 +108,9 @@ Measure::Measure(std::string codename, const std::string &label) {
     ...
     measure.setLabel("New Population");
 */
-
+void Measure::setLabel(std::string label){
+  this->label = label;
+}
 
 /*
   TODO: Measure::getValue(key)
@@ -131,7 +139,13 @@ Measure::Measure(std::string codename, const std::string &label) {
     ...
     auto value = measure.getValue(1999); // returns 12345678.9
 */
-
+int Measure::getValue(int key){
+  if(values.count(key) > 0){
+    return values.find(key)->second;
+  }else{
+    throw std::out_of_range("No measure found matching "+key);
+  }
+}
 
 /*
   TODO: Measure::setValue(key, value)
@@ -155,7 +169,16 @@ Measure::Measure(std::string codename, const std::string &label) {
 
     measure.setValue(1999, 12345678.9);
 */
-
+void Measure::setValue(int key, int value){
+    if(values.count(key) > 0){
+    values.erase(key);
+    //measures.insert(pair<std::string, Measure>(codename, measure));
+    values.insert({key, value});
+  }else{
+    //measures.insert(pair<std::string, Measure>(codename, measure));
+    values.insert({key, value});
+  }
+}
 
 /*
   TODO: Measure::size()
@@ -175,7 +198,9 @@ Measure::Measure(std::string codename, const std::string &label) {
     measure.setValue(1999, 12345678.9);
     auto size = measure.size(); // returns 1
 */
-
+int Measure::size(){
+  return this->values.size();
+}
 
 /*
   TODO: Measure::getDifference()
@@ -191,7 +216,7 @@ Measure::Measure(std::string codename, const std::string &label) {
   @example
     Measure measure("pop", "Population");
     measure.setValue(1999, 12345678.9);
-    measure.setValue(1999, 12345679.9);
+    measure.setValue(2001, 12345679.9);
     auto diff = measure.getDifference(); // returns 1.0
 */
 
@@ -228,7 +253,7 @@ Measure::Measure(std::string codename, const std::string &label) {
   @example
     Measure measure("pop", "Population");
     measure.setValue(1999, 12345678.9);
-    measure.setValue(1999, 12345679.9);
+    measure.setValue(2001, 12345679.9);
     auto diff = measure.getDifference(); // returns 1
 */
 

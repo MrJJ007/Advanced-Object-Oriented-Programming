@@ -54,11 +54,11 @@ public:
 */
 class InputFile : public InputSource {
   private:
-    std::fstream fileContents;
+    std::ifstream fileContents;
     std::string filePath;
 public:
   InputFile(const std::string& filePath);
-  std::fstream& open();
+  std::ifstream& open();
 };
 
 #endif // INPUT_H_

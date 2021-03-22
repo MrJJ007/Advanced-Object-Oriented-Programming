@@ -45,7 +45,8 @@ using json = nlohmann::json;
     Areas data = Areas();
 */
 Areas::Areas() {
-  throw std::logic_error("Areas::Areas() has not been implemented!");
+  //AreasContainer AreasContainer;
+  //throw std::logic_error("Areas::Areas() has not been implemented!");
 }
 
 /*
@@ -73,7 +74,14 @@ Areas::Areas() {
     Area area(localAuthorityCode);
     data.setArea(localAuthorityCode, area);
 */
-
+void Areas::setArea(std::string localAuthorityCode, Area area){
+  //this->namesMap["eng"]=name;
+  //auto it = areasContainer.find(localAuthorityCode)->second;
+  if(areasContainer.empty()){
+    
+    areasContainer.insert({localAuthorityCode,area});
+  }
+}
 
 /*
   TODO: Areas::getArea(localAuthorityCode)
@@ -98,7 +106,14 @@ Areas::Areas() {
     ...
     Area area2 = areas.getArea("W06000023");
 */
-
+Area Areas::getArea(std::string localAuthorityCode){
+  if(areasContainer.count(localAuthorityCode) > 0){
+    return areasContainer.find(localAuthorityCode)->second;
+  }else{
+    throw std::out_of_range("area doesnt exist getArea FIND CORRECT ERROR MESSAGE");
+  }
+  
+}
 
 /*
   TODO: Areas::size()
@@ -118,7 +133,9 @@ Areas::Areas() {
     
     auto size = areas.size(); // returns 1
 */
-
+int Areas::size(){
+  return areasContainer.size();
+}
 
 /*
   TODO: Areas::populateFromAuthorityCodeCSV(is, cols, areasFilter)
@@ -175,9 +192,10 @@ void Areas::populateFromAuthorityCodeCSV(
     std::istream &is,
     const BethYw::SourceColumnMapping &cols,
     const StringFilterSet * const areasFilter) {
-  throw std::logic_error(
-    "Areas::populateFromAuthorityCodeCSV() has not been implemented!");
+  //throw std::logic_error("Areas::populateFromAuthorityCodeCSV() has not been implemented!");
+  
 }
+
 
 /*
   TODO: Areas::populateFromWelshStatsJSON(is,
