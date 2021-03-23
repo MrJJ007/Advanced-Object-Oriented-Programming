@@ -119,25 +119,24 @@ void Area::setName(std::string lang, std::string name){
   int len = lang.length();
   transform(lang.begin(), lang.end(), lang.begin(), ::tolower);
   if(len == 3){
-    if(lang == "eng" ){
-   //|| "ENG" || "Eng"
-    //this->namesMap["eng"] = name;
-    if(namesMap.count(lang) > 0){
-      namesMap.erase(lang);
-    }
-    namesMap.insert({lang, name});
-  }else if(lang == "cym"){
-    //||"CYM"||"Cym"
-    //this->namesMap["cym"] = name;
-    if(namesMap.count(lang) > 0){
-      namesMap.erase(lang);
-    }
-    namesMap.insert({lang, name});
-    }else{
-      throw std::invalid_argument("Area::setName: Language code must be three alphabetical letters only");
-    }
+    namesMap.emplace(lang, name);
+    // if(lang == "eng" ){
+
+    //   if(namesMap.count(lang) > 0){
+    //     namesMap.erase(lang);
+    //   }
+    //   //namesMap.insert({lang, name});
+    //   namesMap.emplace(lang, name);
+    // }else if(lang == "cym"){
+
+    //   if(namesMap.count(lang) > 0){
+    //     namesMap.erase(lang);
+    //   }
+    //   //namesMap.insert({lang, name});
+    //   namesMap.emplace(lang, name);
+    // }
   }else{
-    throw std::invalid_argument("Area::setName: Language code must be three alphabetical letters only");
+    throw std::invalid_argument("Area::setName: Language code must be three alphabetical letters only 2");
   }
   
  
@@ -167,7 +166,7 @@ void Area::setName(std::string lang, std::string name){
     ...
     auto measure2 = area.getMeasure("pop");
 */
-Measure Area::getMeasure(std::string key){
+Measure& Area::getMeasure(std::string key){
   if(measures.count(key) > 0){
     return measures.find(key)->second;
   }else{
@@ -213,13 +212,16 @@ Measure Area::getMeasure(std::string key){
     area.setMeasure(codename, measure);
 */
 void Area::setMeasure(std::string codename, Measure measure){
+  transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
   if(measures.count(codename) > 0){
     measures.erase(codename);
     //measures.insert(pair<std::string, Measure>(codename, measure));
-    measures.insert({codename, measure});
+    //measures.insert({codename, measure});
+    measures.emplace(codename, measure);
   }else{
     //measures.insert(pair<std::string, Measure>(codename, measure));
-    measures.insert({codename, measure});
+    //measures.insert({codename, measure});
+    measures.emplace(codename, measure);
   }
 }
 
@@ -311,3 +313,18 @@ int Area::size(){
 
     bool eq = area1 == area2;
 */
+bool operator==(const Area& lhs, const Area& rhs){
+    //std::string lhsname
+    // checking lac and name
+    if(lhs.localAuthorityCode == rhs.localAuthorityCode && lhs.name == rhs.name){ 
+        // checking names in different languages
+        if(lhs.namesMap.size() == rhs.namesMap.size() && std::equal(lhs.namesMap.begin(),lhs.namesMap.end(),rhs.namesMap.begin())){
+          // checking measures map
+          if(lhs.measures.size() == rhs.measures.size() && std::equal(lhs.measures.begin(),lhs.measures.end(),rhs.measures.begin())){
+             // need to check the equality of measure objects in the measure map
+             return true;
+          }    
+        }
+    }
+    return false;
+}

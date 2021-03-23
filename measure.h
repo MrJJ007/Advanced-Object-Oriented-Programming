@@ -39,6 +39,7 @@ class Measure {
     void setValue(int key, int value);
     int size();
 
+    friend bool operator==(const Measure &lhs, const Measure &rhs);
 };
 
 #endif // MEASURE_H_

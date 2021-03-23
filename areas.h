@@ -76,7 +76,7 @@ public:
   void setArea(
       std::string localAuthorityCode, 
       Area area);
-  Area getArea(
+  Area& getArea(
       std::string localAuthorityCode);
   int size();
   void populateFromAuthorityCodeCSV(

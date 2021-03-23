@@ -40,9 +40,11 @@ class Area {
     std::string getLocalAuthorityCode();
     std::string getName(std::string langCode);
     void setName(std::string lang, std::string name);
-    Measure getMeasure(std::string key);
+    Measure& getMeasure(std::string key);
     void setMeasure(std::string codename, Measure measure);
     int size();
+
+    friend bool operator==(const Area& lhs, const Area& rhs);
 };
 
 #endif // AREA_H_

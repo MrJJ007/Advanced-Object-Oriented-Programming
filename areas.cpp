@@ -77,10 +77,10 @@ Areas::Areas() {
 void Areas::setArea(std::string localAuthorityCode, Area area){
   //this->namesMap["eng"]=name;
   //auto it = areasContainer.find(localAuthorityCode)->second;
-  if(areasContainer.empty()){
-    
-    areasContainer.insert({localAuthorityCode,area});
-  }
+  //if(areasContainer.empty()){
+    areasContainer.emplace(localAuthorityCode,area);
+    //areasContainer.insert({localAuthorityCode,area});
+  //}
 }
 
 /*
@@ -106,7 +106,7 @@ void Areas::setArea(std::string localAuthorityCode, Area area){
     ...
     Area area2 = areas.getArea("W06000023");
 */
-Area Areas::getArea(std::string localAuthorityCode){
+Area& Areas::getArea(std::string localAuthorityCode){
   if(areasContainer.count(localAuthorityCode) > 0){
     return areasContainer.find(localAuthorityCode)->second;
   }else{
@@ -307,6 +307,7 @@ void Areas::populateFromAuthorityCodeCSV(
   TODO: Areas::populateFromAuthorityByYearCSV(is,
                                               cols,
                                               areasFilter,
+                                              measuresFilter,
                                               yearFilter)
 
   This function imports CSV files that contain a single measure. The 
@@ -368,6 +369,7 @@ void Areas::populateFromAuthorityCodeCSV(
     std::runtime_error if a parsing error occurs (e.g. due to a malformed file)
     std::out_of_range if there are not enough columns in cols
 */
+
 
 
 /*

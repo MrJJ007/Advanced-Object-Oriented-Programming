@@ -170,14 +170,14 @@ int Measure::getValue(int key){
     measure.setValue(1999, 12345678.9);
 */
 void Measure::setValue(int key, int value){
-    if(values.count(key) > 0){
+  if(values.count(key) > 0){
     values.erase(key);
     //measures.insert(pair<std::string, Measure>(codename, measure));
-    values.insert({key, value});
-  }else{
-    //measures.insert(pair<std::string, Measure>(codename, measure));
-    values.insert({key, value});
   }
+    //measures.insert(pair<std::string, Measure>(codename, measure));
+    //values.insert({key, value});
+    values.emplace(key, value);
+  
 }
 
 /*
@@ -313,3 +313,12 @@ int Measure::size(){
     otherwise
 */
 
+bool operator==(const Measure& lhs, const Measure& rhs){
+    //std::string lhsname
+    if(lhs.codename == rhs.codename && lhs.label == rhs.label){
+        return lhs.values.size() == rhs.values.size()
+               && std::equal(lhs.values.begin(), lhs.values.end(),
+               rhs.values.begin());// return true
+    }
+    return false;
+}
