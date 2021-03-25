@@ -29,7 +29,7 @@ class Measure {
   private:
   std::string codename;
   std::string label;
-  std::map <int, int> values;
+  std::map <int, int> values;// probas sohoulbe int anf double
   public:
     Measure(std::string code, const std::string &label);
     std::string getCodename();

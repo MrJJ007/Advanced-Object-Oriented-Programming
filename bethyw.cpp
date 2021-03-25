@@ -82,7 +82,7 @@ int BethYw::run(int argc, char *argv[]) {
   auto measuresFilter   = BethYw::parseMeasuresArg(args);
   auto yearsFilter      = BethYw::parseYearsArg(args);
 
-  //Areas data = Areas();
+  Areas data = Areas();
 
   //BethYw::loadAreas(data, dir, areasFilter);
   //

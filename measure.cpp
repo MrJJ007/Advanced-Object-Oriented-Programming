@@ -315,10 +315,9 @@ int Measure::size(){
 
 bool operator==(const Measure& lhs, const Measure& rhs){
     //std::string lhsname
-    if(lhs.codename == rhs.codename && lhs.label == rhs.label){
-        return lhs.values.size() == rhs.values.size()
-               && std::equal(lhs.values.begin(), lhs.values.end(),
-               rhs.values.begin());// return true
+    if(lhs.codename == rhs.codename && lhs.label == rhs.label && lhs.values == rhs.values){
+         return true;//std::equal(lhs.values.begin(), lhs.values.end(),
+        //        rhs.values.begin());// return true
     }
     return false;
 }

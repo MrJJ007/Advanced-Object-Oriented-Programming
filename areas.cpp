@@ -25,6 +25,8 @@
 #include <tuple>
 #include <unordered_set>
 
+#include <sstream>
+
 #include "lib_json.hpp"
 
 #include "datasets.h"
@@ -75,12 +77,11 @@ Areas::Areas() {
     data.setArea(localAuthorityCode, area);
 */
 void Areas::setArea(std::string localAuthorityCode, Area area){
-  //this->namesMap["eng"]=name;
-  //auto it = areasContainer.find(localAuthorityCode)->second;
-  //if(areasContainer.empty()){
-    areasContainer.emplace(localAuthorityCode,area);
-    //areasContainer.insert({localAuthorityCode,area});
-  //}
+  if(areasContainer.count(localAuthorityCode) > 0){
+    areasContainer.erase(localAuthorityCode);
+    //return areasContainer.find(localAuthorityCode)->second;
+  }
+  areasContainer.emplace(localAuthorityCode,area);
 }
 
 /*
@@ -108,9 +109,10 @@ void Areas::setArea(std::string localAuthorityCode, Area area){
 */
 Area& Areas::getArea(std::string localAuthorityCode){
   if(areasContainer.count(localAuthorityCode) > 0){
+    //std::cout<<areasContainer.find(localAuthorityCode)->second.getLocalAuthorityCode() <<std::endl;
     return areasContainer.find(localAuthorityCode)->second;
   }else{
-    throw std::out_of_range("area doesnt exist getArea FIND CORRECT ERROR MESSAGE");
+    throw std::out_of_range("No area found matching " + localAuthorityCode);
   }
   
 }
@@ -192,8 +194,26 @@ void Areas::populateFromAuthorityCodeCSV(
     std::istream &is,
     const BethYw::SourceColumnMapping &cols,
     const StringFilterSet * const areasFilter) {
-  //throw std::logic_error("Areas::populateFromAuthorityCodeCSV() has not been implemented!");
-  
+      std::string line;
+      std::vector<std::string> result;
+      while(getline(is, line)){
+        std::stringstream ss(line);
+        while(getline(ss, line,',')){
+          //std::cout<<line;
+          result.push_back(line);
+        }
+      } 
+      int sizeOfResult = static_cast<int>(result.size());
+      //std::cout<<sizeOfResult;
+      for(int i =3;i<sizeOfResult-2;i=i+3){
+        //std::cout<<result.at(i)<<" rarrh "<<i;
+        auto localAuthorityCode = result.at(i);
+        Area area(localAuthorityCode);
+        area.setName("eng", result.at(i+1));
+        area.setName("cym", result.at(i+2));
+        this->setArea(localAuthorityCode, area);
+
+      }
 }
 
 

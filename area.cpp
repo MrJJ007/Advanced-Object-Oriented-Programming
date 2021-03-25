@@ -20,7 +20,14 @@
 #include <stdexcept>
 #include <map>
 #include <algorithm>
+
+#include <regex>// might not be allowed 
+
+#include <ostream> //probs not needed later
+#include <iostream>
+
 #include "area.h"
+#include "areas.h"
 
 /*
   TODO: Area::Area(localAuthorityCode)
@@ -81,13 +88,19 @@ std::string Area::getLocalAuthorityCode(){
     auto name = area.getName(langCode);
 */
 std::string Area::getName(std::string langCode){
-  if(langCode == "eng"){
-    return namesMap.find("eng")->second;
-  }else if(langCode == "cym"){
-    return namesMap.find("cym")->second;
+  if(namesMap.count(langCode) > 0){
+    return namesMap.find(langCode)->second;
   }else{
-    throw std::out_of_range("getName area FIND CORRECT ERROR MESSAGE");
+    throw std::out_of_range("getName area FIND CORRECT ERROR MESSAGE"+ langCode);
   }
+  
+  // if(langCode == "eng"){
+  //   return namesMap.find("eng")->second;
+  // }else if(langCode == "cym"){
+  //   return namesMap.find("cym")->second;
+  // }else{
+  //   throw std::out_of_range("getName area FIND CORRECT ERROR MESSAGE");
+  // }
 }
 
 /*
@@ -118,25 +131,15 @@ std::string Area::getName(std::string langCode){
 void Area::setName(std::string lang, std::string name){
   int len = lang.length();
   transform(lang.begin(), lang.end(), lang.begin(), ::tolower);
-  if(len == 3){
+  if(len == 3 && std::regex_match(lang, std::regex("^[A-Za-z]+$"))){
+    if(namesMap.count(lang) > 0){
+      namesMap.erase(lang);
+    }
     namesMap.emplace(lang, name);
-    // if(lang == "eng" ){
-
-    //   if(namesMap.count(lang) > 0){
-    //     namesMap.erase(lang);
-    //   }
-    //   //namesMap.insert({lang, name});
-    //   namesMap.emplace(lang, name);
-    // }else if(lang == "cym"){
-
-    //   if(namesMap.count(lang) > 0){
-    //     namesMap.erase(lang);
-    //   }
-    //   //namesMap.insert({lang, name});
-    //   namesMap.emplace(lang, name);
-    // }
+  
+    
   }else{
-    throw std::invalid_argument("Area::setName: Language code must be three alphabetical letters only 2");
+    throw std::invalid_argument("Area::setName: Language code must be three alphabetical letters only");
   }
   
  
@@ -314,17 +317,54 @@ int Area::size(){
     bool eq = area1 == area2;
 */
 bool operator==(const Area& lhs, const Area& rhs){
-    //std::string lhsname
-    // checking lac and name
-    if(lhs.localAuthorityCode == rhs.localAuthorityCode && lhs.name == rhs.name){ 
+    //std::string lhsname;
+    //checking lac and name
+    // if(lhs.namesMap == rhs.namesMap){
+    //     return true;
+    //   }
+    //   return false;
+    if(lhs.localAuthorityCode == rhs.localAuthorityCode){ 
+      //if(lhs.namesMap == rhs.namesMap){
+        return true;
+      }
         // checking names in different languages
-        if(lhs.namesMap.size() == rhs.namesMap.size() && std::equal(lhs.namesMap.begin(),lhs.namesMap.end(),rhs.namesMap.begin())){
+        //&& std::equal(lhs.namesMap.begin(),lhs.namesMap.end(),rhs.namesMap.begin())
+        //if(lhs.namesMap.size() == rhs.namesMap.size()){
+          // return true;
+          // if(std::equal(lhs.namesMap.begin(),lhs.namesMap.end(),rhs.namesMap.begin())){
+          //   return true;
+          //   if(std::equal(lhs.measures.begin(),lhs.measures.end(),rhs.measures.begin())){
+          //     return true;
+          //   }
+          // }
+          // for(auto it = lhs.measures.begin(); it != lhs.measures.end(); it++){
+          //   if(!(it->second == rhs.measures->second)){
+          //     break;
+          //   }
+          //   if(it == lhs.measures.end()){
+          //     return true;
+          //   }
+
+             
+          // } 
+          //      for(auto its = it->second.getValue(it->first)){//this still needs work
+          //        return true;
+          //      }
+          //if(lhs.measures == rhs.measures.size()){
           // checking measures map
-          if(lhs.measures.size() == rhs.measures.size() && std::equal(lhs.measures.begin(),lhs.measures.end(),rhs.measures.begin())){
-             // need to check the equality of measure objects in the measure map
-             return true;
-          }    
-        }
-    }
-    return false;
+          // if(lhs.measures.size() == rhs.measures.size()){
+          //    need to check the equality of measure objects in the measure map
+          //    for(auto it = lhs.measures.begin(); it != lhs.measures.end(); it++){
+          //      for(auto its = it->second.getValue(it->first)){//this still needs work
+          //        return true;
+          //      }
+                
+          //    }
+          //      return true;
+          // } 
+          
+        //}
+        
+    // }
+   return false;
 }

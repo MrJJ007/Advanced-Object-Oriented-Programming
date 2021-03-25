@@ -68,7 +68,7 @@ InputFile::InputFile(const std::string& filePath) : InputSource(filePath) {
   //std::cout<<this->getSource();
   //throw std::logic_error("InputFile::InputFile() has not been implemented!");
 }
-
+ 
 /*
   TODO: InputFile::open()
 
