@@ -20,7 +20,7 @@
 
 #include <stdexcept>
 #include <string>
-
+#include <iostream>
 #include "measure.h"
 
 /*
@@ -139,11 +139,13 @@ void Measure::setLabel(std::string label){
     ...
     auto value = measure.getValue(1999); // returns 12345678.9
 */
-int Measure::getValue(int key){
+double Measure::getValue(int key){
   if(values.count(key) > 0){
+    //std::cout<<key<<" if ";
     return values.find(key)->second;
   }else{
-    throw std::out_of_range("No measure found matching "+key);
+    //std::cout<<key<<" else ";
+    throw std::out_of_range("No value found for year "+std::to_string(key));
   }
 }
 
@@ -169,7 +171,7 @@ int Measure::getValue(int key){
 
     measure.setValue(1999, 12345678.9);
 */
-void Measure::setValue(int key, int value){
+void Measure::setValue(int key, double value){
   if(values.count(key) > 0){
     values.erase(key);
     //measures.insert(pair<std::string, Measure>(codename, measure));

@@ -28,6 +28,10 @@
 #include <sstream>
 
 #include "lib_json.hpp"
+#include "nlohmann/json.hpp"
+
+// for convenience
+using json = nlohmann::json;
 
 #include "datasets.h"
 #include "areas.h"
@@ -194,25 +198,27 @@ void Areas::populateFromAuthorityCodeCSV(
     std::istream &is,
     const BethYw::SourceColumnMapping &cols,
     const StringFilterSet * const areasFilter) {
+      // reading the csv into a stringstream, to put commas at the new lines
+      // then reading the stringstream into a vector using the commas as delimiters
       std::string line;
       std::vector<std::string> result;
       while(getline(is, line)){
         std::stringstream ss(line);
         while(getline(ss, line,',')){
-          //std::cout<<line;
           result.push_back(line);
         }
       } 
       int sizeOfResult = static_cast<int>(result.size());
-      //std::cout<<sizeOfResult;
+      // we know that starting from the 3rd element every 3rd element will be
+      // an area code and then +1 from the code is the english name and 
+      // +2 from the code is the welsh name
       for(int i =3;i<sizeOfResult-2;i=i+3){
-        //std::cout<<result.at(i)<<" rarrh "<<i;
+        //std::cout<<result.at(i)<<i;
         auto localAuthorityCode = result.at(i);
         Area area(localAuthorityCode);
         area.setName("eng", result.at(i+1));
         area.setName("cym", result.at(i+2));
         this->setArea(localAuthorityCode, area);
-
       }
 }
 
@@ -322,6 +328,53 @@ void Areas::populateFromAuthorityCodeCSV(
       &yearsFilter);
 */
 
+void Areas::populateFromWelshStatsJSON(
+    std::istream &is,
+    const BethYw::SourceColumnMapping &cols,
+    const StringFilterSet * const areasFilter,
+    const StringFilterSet * const measuresFilter,
+    const YearFilterTuple * const yearsFilter){
+
+      json j;
+      is >> j;
+      
+      //std::cout<<areasFilter->size();
+      // who really knows how this works?
+      for (auto& el : j["value"].items()) {
+        auto &data = el.value();
+        //area
+        std::string localAuthorityCode = data["Localauthority_Code"];
+        std::string localAuthorityNameEng = data["Localauthority_ItemName_ENG"];
+        //if(!(areasFilter->count(localAuthorityCode))){
+          if(areasContainer.count(localAuthorityCode) == 0){
+          Area area(localAuthorityCode);
+          area.setName("eng", localAuthorityNameEng);
+          this->setArea(localAuthorityCode, area);
+          }
+          //get ref to area
+          Area& area = getArea(localAuthorityCode);
+          //measures
+          double measureData = data["Data"];
+          std::string measureCode = data["Measure_Code"];
+          std::string measureLabel = data["Measure_ItemName_ENG"];
+          std::string measureYear = data["Year_Code"];
+
+          int convertMeasureYear = stoi(measureYear);
+          // if measure doesnt exist
+          if(!area.checkMeasure(measureCode)){
+            Measure measure(measureCode, measureLabel);
+            measure.setValue(convertMeasureYear, measureData);
+            area.setMeasure(measureCode, measure);
+          }else{
+            auto measure = area.getMeasure(measureCode);
+            measure.setValue(convertMeasureYear, measureData);
+            area.setMeasure(measureCode, measure);
+          }
+        //}
+        //if area doesnt exist in container
+        
+      }
+}
 
 /*
   TODO: Areas::populateFromAuthorityByYearCSV(is,

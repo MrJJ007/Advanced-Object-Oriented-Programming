@@ -169,12 +169,15 @@ void Area::setName(std::string lang, std::string name){
     ...
     auto measure2 = area.getMeasure("pop");
 */
-Measure& Area::getMeasure(std::string key){
-  if(measures.count(key) > 0){
-    return measures.find(key)->second;
+Measure& Area::getMeasure(std::string codename){
+  transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
+  if(measures.count(codename) > 0){
+    return measures.find(codename)->second;
   }else{
-    throw std::out_of_range("No measure found matching "+key);
+    //std::cout<<"yeet";
+    throw std::out_of_range("No measure found matching " +codename);
   }
+  //No measure found matching dens
   // try{
   //   return measures.find(key)->second;
   // }catch(std::exception e){
@@ -218,16 +221,23 @@ void Area::setMeasure(std::string codename, Measure measure){
   transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
   if(measures.count(codename) > 0){
     measures.erase(codename);
-    //measures.insert(pair<std::string, Measure>(codename, measure));
-    //measures.insert({codename, measure});
-    measures.emplace(codename, measure);
-  }else{
-    //measures.insert(pair<std::string, Measure>(codename, measure));
-    //measures.insert({codename, measure});
-    measures.emplace(codename, measure);
   }
+    measures.emplace(codename, measure);
 }
 
+bool Area::checkMeasure(std::string codename){
+  transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
+  //std::cout<<codename;
+
+  if(this->measures.count(codename) > 0){
+    //std::string temp = measures.find(codename)->first;
+    //std::cout<<" "<<temp<<" ";
+    //std::cout<<" true ";
+    return true;
+  }
+  //std::cout<<" false ";
+  return false;
+}
 /*
   TODO: Area::size()
 

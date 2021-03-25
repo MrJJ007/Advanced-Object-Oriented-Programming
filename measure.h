@@ -29,14 +29,14 @@ class Measure {
   private:
   std::string codename;
   std::string label;
-  std::map <int, int> values;// probas sohoulbe int anf double
+  std::map <int, double> values;// probas sohoulbe int anf double
   public:
     Measure(std::string code, const std::string &label);
     std::string getCodename();
     std::string getLabel();
     void setLabel(std::string label);
-    int getValue(int key);
-    void setValue(int key, int value);
+    double getValue(int key);
+    void setValue(int key, double value);
     int size();
 
     friend bool operator==(const Measure &lhs, const Measure &rhs);

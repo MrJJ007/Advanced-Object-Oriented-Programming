@@ -85,6 +85,13 @@ public:
       const StringFilterSet * const areas = nullptr)
       noexcept(false);
 
+  void populateFromWelshStatsJSON(
+    std::istream &is,
+    const BethYw::SourceColumnMapping &cols,
+    const StringFilterSet * const areasFilter,
+    const StringFilterSet * const measuresFilter,
+    const YearFilterTuple * const yearsFilter);
+
   void populate(
       std::istream& is,
       const BethYw::SourceDataType& type,
