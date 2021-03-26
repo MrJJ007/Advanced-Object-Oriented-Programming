@@ -37,6 +37,7 @@ class Measure {
     void setLabel(std::string label);
     double getValue(int key);
     void setValue(int key, double value);
+    std::map<int, double> getAll();
     int size();
 
     friend bool operator==(const Measure &lhs, const Measure &rhs);

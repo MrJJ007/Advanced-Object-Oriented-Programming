@@ -44,6 +44,8 @@ class Area {
     void setMeasure(std::string codename, Measure measure);
     bool checkMeasure(std::string codename);
     int size();
+    std::map<std::string, std::string> getAllNames();
+    std::map<std::string, Measure> getAllMeasures();
 
     friend bool operator==(const Area& lhs, const Area& rhs);
 };

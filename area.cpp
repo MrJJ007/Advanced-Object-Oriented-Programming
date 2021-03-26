@@ -217,10 +217,40 @@ Measure& Area::getMeasure(std::string codename){
 
     area.setMeasure(codename, measure);
 */
+/*
+// if measure doesnt exist
+if(!area.checkMeasure(measureCode)){
+  Measure measure(measureCode, measureLabel);
+  measure.setValue(convertMeasureYear, measureData);
+  area.setMeasure(measureCode, measure);
+}else{
+  auto measure = area.getMeasure(measureCode);
+  measure.setValue(convertMeasureYear, measureData);
+  area.setMeasure(measureCode, measure);
+}
+*/
 void Area::setMeasure(std::string codename, Measure measure){
   transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
   if(measures.count(codename) > 0){
-    measures.erase(codename);
+    Measure& existingMeasure = this->getMeasure(codename);//this->measures.find(codename);
+
+    std::map<int, double> newValues = measure.getAll();
+    for (auto const& x : newValues){
+      existingMeasure.setValue(x.first,x.second);
+    }
+    //existingMeasure.setValue(key,value);
+    //int temp1;
+    //double temp2;
+
+    // for (const auto &s : measure){
+    //   temp1 = measure.first;
+    //   temp2= measure.second;
+    //   measure.setValue(temp1, temp2);
+    // }
+      
+    //measures.erase(codename);
+    //get all values from measure
+    //call setvalues 
   }
     measures.emplace(codename, measure);
 }
@@ -269,7 +299,21 @@ int Area::size(){
   }
   
 }
+std::map<std::string, std::string> Area::getAllNames(){
+  std::map<std::string, std::string> map;
+  for (auto const& x : this->namesMap){
+    map.emplace(x.first,x.second);
+  }
+  return map;
+}
 
+std::map<std::string, Measure> Area::getAllMeasures(){
+  std::map<std::string, Measure> map;
+  for (auto const& x : this->measures){
+    map.emplace(x.first,x.second);
+  }
+  return map;
+}
 /*
   TODO: operator<<(os, area)
 
@@ -327,54 +371,10 @@ int Area::size(){
     bool eq = area1 == area2;
 */
 bool operator==(const Area& lhs, const Area& rhs){
-    //std::string lhsname;
-    //checking lac and name
-    // if(lhs.namesMap == rhs.namesMap){
-    //     return true;
-    //   }
-    //   return false;
-    if(lhs.localAuthorityCode == rhs.localAuthorityCode){ 
-      //if(lhs.namesMap == rhs.namesMap){
+    if(lhs.localAuthorityCode == rhs.localAuthorityCode && 
+        lhs.namesMap == rhs.namesMap &&
+        lhs.measures == rhs.measures){ 
         return true;
-      }
-        // checking names in different languages
-        //&& std::equal(lhs.namesMap.begin(),lhs.namesMap.end(),rhs.namesMap.begin())
-        //if(lhs.namesMap.size() == rhs.namesMap.size()){
-          // return true;
-          // if(std::equal(lhs.namesMap.begin(),lhs.namesMap.end(),rhs.namesMap.begin())){
-          //   return true;
-          //   if(std::equal(lhs.measures.begin(),lhs.measures.end(),rhs.measures.begin())){
-          //     return true;
-          //   }
-          // }
-          // for(auto it = lhs.measures.begin(); it != lhs.measures.end(); it++){
-          //   if(!(it->second == rhs.measures->second)){
-          //     break;
-          //   }
-          //   if(it == lhs.measures.end()){
-          //     return true;
-          //   }
-
-             
-          // } 
-          //      for(auto its = it->second.getValue(it->first)){//this still needs work
-          //        return true;
-          //      }
-          //if(lhs.measures == rhs.measures.size()){
-          // checking measures map
-          // if(lhs.measures.size() == rhs.measures.size()){
-          //    need to check the equality of measure objects in the measure map
-          //    for(auto it = lhs.measures.begin(); it != lhs.measures.end(); it++){
-          //      for(auto its = it->second.getValue(it->first)){//this still needs work
-          //        return true;
-          //      }
-                
-          //    }
-          //      return true;
-          // } 
-          
-        //}
-        
-    // }
+      } 
    return false;
 }

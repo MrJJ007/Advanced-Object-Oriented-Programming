@@ -74,7 +74,7 @@ int BethYw::run(int argc, char *argv[]) {
   // }
 
   // Parse data directory argument
-  //std::string dir = args["dir"].as<std::string>() + DIR_SEP;
+  std::string dir = args["dir"].as<std::string>() + DIR_SEP;
 
   // Parse other arguments and import data
   auto datasetsToImport = BethYw::parseDatasetsArg(args);
@@ -86,20 +86,20 @@ int BethYw::run(int argc, char *argv[]) {
 
   //BethYw::loadAreas(data, dir, areasFilter);
   //
-  // BethYw::loadDatasets(data,
+  //  BethYw::loadDatasets(data,
   //                      dir,
   //                      datasetsToImport,
   //                      areasFilter,
-  //                      measuresFilter,
+  //                       measuresFilter,
   //                      yearsFilter);
 
-  // if (args.count("json")) {
-  //   // The output as JSON
-  //   std::cout << data.toJSON() << std::endl;
-  // } else {
-  //   // The output as tables
-  //   // std::cout << data << std::endl;
-  // }
+  if (args.count("json")) {
+    // The output as JSON
+    std::cout << data.toJSON() << std::endl;
+  } else {
+    // The output as tables
+    // std::cout << data << std::endl;
+  }
 
   return 0;
 }

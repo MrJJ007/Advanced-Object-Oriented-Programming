@@ -141,7 +141,7 @@ void Measure::setLabel(std::string label){
 */
 double Measure::getValue(int key){
   if(values.count(key) > 0){
-    //std::cout<<key<<" if ";
+    //std::cout<<key<<" if "<< values.find(key)->second<<" ";
     return values.find(key)->second;
   }else{
     //std::cout<<key<<" else ";
@@ -171,6 +171,7 @@ double Measure::getValue(int key){
 
     measure.setValue(1999, 12345678.9);
 */
+
 void Measure::setValue(int key, double value){
   if(values.count(key) > 0){
     values.erase(key);
@@ -182,6 +183,13 @@ void Measure::setValue(int key, double value){
   
 }
 
+std::map<int, double> Measure::getAll(){
+  std::map<int, double> map;
+  for (auto const& x : this->values){
+    map.emplace(x.first,x.second);
+  }
+  return map;
+}
 /*
   TODO: Measure::size()
 
@@ -201,6 +209,9 @@ void Measure::setValue(int key, double value){
     auto size = measure.size(); // returns 1
 */
 int Measure::size(){
+  //for (auto const& x : this->values){
+      //std::cout<<x.first;
+    //}
   return this->values.size();
 }
 
