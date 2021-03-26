@@ -346,30 +346,65 @@ void Areas::populateFromWelshStatsJSON(
         std::string localAuthorityCode = data["Localauthority_Code"];
         std::string localAuthorityNameEng = data["Localauthority_ItemName_ENG"];
         //if(!(areasFilter->count(localAuthorityCode))){
-          if(areasContainer.count(localAuthorityCode) == 0){
-          Area area(localAuthorityCode);
-          area.setName("eng", localAuthorityNameEng);
-          this->setArea(localAuthorityCode, area);
-          }
-          //get ref to area
-          Area& area = getArea(localAuthorityCode);
-          //measures
-          double measureData = data["Data"];
-          std::string measureCode = data["Measure_Code"];
-          std::string measureLabel = data["Measure_ItemName_ENG"];
-          std::string measureYear = data["Year_Code"];
+          //std::cout<<areasFilter->find(localAuthorityCode);
+          std::unordered_set<std::string>::const_iterator got = areasFilter->find (localAuthorityCode);
+          //std::unordered_set<std::string>::const_iterator gotNull = areasFilter->find ("");
+          if(got != areasFilter->end() ){
+            //std::cout<<*got;
+            if(areasContainer.count(*got) == 0){
+              Area area(*got);
+              area.setName("eng", localAuthorityNameEng);
+              this->setArea(*got, area);
+            }
+            //get ref to area
+            Area& area = getArea(*got);
+            //std::cout<<area.getLocalAuthorityCode();
+            //measures
+            double measureData = data["Data"];
+            std::string measureCode = data["Measure_Code"];
+            std::string measureLabel = data["Measure_ItemName_ENG"];
+            std::string measureYear = data["Year_Code"];
 
-          int convertMeasureYear = stoi(measureYear);
-          // if measure doesnt exist
-          if(!area.checkMeasure(measureCode)){
-            Measure measure(measureCode, measureLabel);
-            measure.setValue(convertMeasureYear, measureData);
-            area.setMeasure(measureCode, measure);
-          }else{
-            auto measure = area.getMeasure(measureCode);
-            measure.setValue(convertMeasureYear, measureData);
-            area.setMeasure(measureCode, measure);
+            int convertMeasureYear = stoi(measureYear);
+            // if measure doesnt exist
+            if(!area.checkMeasure(measureCode)){
+              Measure measure(measureCode, measureLabel);
+              measure.setValue(convertMeasureYear, measureData);
+              area.setMeasure(measureCode, measure);
+            }else{
+              auto measure = area.getMeasure(measureCode);
+              measure.setValue(convertMeasureYear, measureData);
+              area.setMeasure(measureCode, measure);
+            }
+          // gotNull != areasFilter->end()
+          }else if(areasFilter->empty() && measuresFilter->empty()){
+            //std::cout<<*gotNull;
+            if(areasContainer.count(localAuthorityCode) == 0){
+              Area area(localAuthorityCode);
+              area.setName("eng", localAuthorityNameEng);
+              this->setArea(localAuthorityCode, area);
+            }
+            //get ref to area
+            Area& area = getArea(localAuthorityCode);
+            //measures
+            double measureData = data["Data"];
+            std::string measureCode = data["Measure_Code"];
+            std::string measureLabel = data["Measure_ItemName_ENG"];
+            std::string measureYear = data["Year_Code"];
+
+            int convertMeasureYear = stoi(measureYear);
+            // if measure doesnt exist
+            if(!area.checkMeasure(measureCode)){
+              Measure measure(measureCode, measureLabel);
+              measure.setValue(convertMeasureYear, measureData);
+              area.setMeasure(measureCode, measure);
+            }else{
+              auto measure = area.getMeasure(measureCode);
+              measure.setValue(convertMeasureYear, measureData);
+              area.setMeasure(measureCode, measure);
+            }
           }
+          
         //}
         //if area doesnt exist in container
         
