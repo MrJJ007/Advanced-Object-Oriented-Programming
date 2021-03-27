@@ -21,8 +21,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include<stdio.h>
-using namespace std;
+#include <stdio.h>
+
 /*
   TODO: InputSource::InputSource(source)
 
@@ -33,9 +33,6 @@ using namespace std;
 */
 InputSource::InputSource(const std::string& source) {
   this->sourceValue = source;
-  //this->sourceValue = "data/areas.csv";
-  // this line here
-  //throw std::logic_error("InputSource::InputSource() has not been implemented!");
 }
 
 /*
@@ -62,11 +59,7 @@ std::string& InputSource::getSource(){
     InputFile input("data/areas.csv");
 */
 InputFile::InputFile(const std::string& filePath) : InputSource(filePath) {
-  //ifstream myfile ("../datasets/areas.csv");
-  //ifstream myfile (filePath);
   this->filePath  = filePath;
-  //std::cout<<this->getSource();
-  //throw std::logic_error("InputFile::InputFile() has not been implemented!");
 }
  
 /*
@@ -87,13 +80,9 @@ InputFile::InputFile(const std::string& filePath) : InputSource(filePath) {
     input.open();
 */
 std::ifstream& InputFile::open(){
-  // ifstream ifile;
-  // ifile.open("../"+filePath);
   fileContents.open(this->getSource());
-   // fileContents.open("../datasets/areas.csv");
   if(!fileContents.is_open()){
     throw std::runtime_error("InputFile::open: Failed to open file "+ this->getSource());
-    //
   } else {
     return fileContents;
   }  

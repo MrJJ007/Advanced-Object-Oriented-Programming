@@ -141,7 +141,7 @@ void Measure::setLabel(std::string label){
 */
 double Measure::getValue(int key){
   if(values.count(key) > 0){
-    //std::cout<<key<<" if "<< values.find(key)->second<<" ";
+    //std::cout<<key<<" key "<< values.find(key)->second<<" ";
     return values.find(key)->second;
   }else{
     //std::cout<<key<<" else ";
@@ -269,7 +269,14 @@ int Measure::size(){
     measure.setValue(2001, 12345679.9);
     auto diff = measure.getDifference(); // returns 1
 */
-
+double Measure::getAverage(){
+  int size = values.size();
+  double rollingTotal = 0;
+  for(auto const& x: values){
+    rollingTotal = rollingTotal + x.second;
+    }
+  return rollingTotal/size;
+}
 
 /*
   TODO: operator<<(os, measure)

@@ -388,75 +388,38 @@ void Areas::populateFromWelshStatsJSON(
 
         int convertMeasureYear = stoi(measureYear);
 
-        bool importAll = false;
-        if(areasFilter->empty() && measuresFilter->empty() &&
-                  startFilterYear == 0 && endFilterYear == 0){
-                      //not currently used
-                  }
         transform(measureCode.begin(), measureCode.end(), measureCode.begin(), ::tolower);
         std::unordered_set<std::string>::const_iterator got = areasFilter->find (localAuthorityCode);
         std::unordered_set<std::string>::const_iterator gotM = measuresFilter->find (measureCode);
+
         if(got == areasFilter->end() && !areasFilter->empty()){
           continue;
         }
         if(gotM == measuresFilter->end() && !measuresFilter->empty()){
           continue;
         }
-        if(convertMeasureYear <= startFilterYear && 
-            convertMeasureYear >= endFilterYear &&
-            startFilterYear >0 &&
-            endFilterYear > 0){
-              continue;
+        if(convertMeasureYear < startFilterYear || convertMeasureYear > endFilterYear){
+          if(startFilterYear != 0 || endFilterYear != 0){
+            continue;
+          }
         }
 
         if(areasContainer.count(localAuthorityCode) == 0){
-                        Area area(localAuthorityCode);
-                        area.setName("eng", localAuthorityNameEng);
-                      this->setArea(localAuthorityCode, area);
-                      }
+          Area area(localAuthorityCode);
+          area.setName("eng", localAuthorityNameEng);
+          this->setArea(localAuthorityCode, area);
+         }
         Area& area = getArea(localAuthorityCode);
-        if(!area.checkMeasure(measureCode) || importAll){
 
-                  Measure measure(measureCode, measureLabel);
-                  measure.setValue(convertMeasureYear, measureData);
-                  area.setMeasure(measureCode, measure);
-
+        if(!area.checkMeasure(measureCode)){
+          Measure measure(measureCode, measureLabel);
+          measure.setValue(convertMeasureYear, measureData);
+          area.setMeasure(measureCode, measure);
         }else{
-
-                  auto measure = area.getMeasure(measureCode);
-                  measure.setValue(convertMeasureYear, measureData);
-                  area.setMeasure(measureCode, measure);
+          auto measure = area.getMeasure(measureCode);
+          measure.setValue(convertMeasureYear, measureData);
+          area.setMeasure(measureCode, measure);
         }
-
-        // if(got != areasFilter->end() || importAll){
-        //             //std::cout<<*gotNull;
-        //   if(areasContainer.count(localAuthorityCode) == 0){
-        //                 Area area(localAuthorityCode);
-        //                 area.setName("eng", localAuthorityNameEng);
-        //               this->setArea(localAuthorityCode, area);
-        //               }
-        //                       //get ref to area
-        //       Area& area = getArea(localAuthorityCode);
-        //   if((convertMeasureYear >= startFilterYear && 
-        //     convertMeasureYear <= endFilterYear) || importAll){
-        //       if(gotM != measuresFilter->end() || importAll){
-                  
-        //       // if measure doesnt exist
-        //         if(!area.checkMeasure(measureCode) || importAll){
-
-        //           Measure measure(measureCode, measureLabel);
-        //           measure.setValue(convertMeasureYear, measureData);
-        //           area.setMeasure(measureCode, measure);
-
-        //         }else{
-
-        //           auto measure = area.getMeasure(measureCode);
-        //           measure.setValue(convertMeasureYear, measureData);
-        //           area.setMeasure(measureCode, measure);
-        //         }
-        //       }
-        //   }
-        // }
   }
 }
 

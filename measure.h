@@ -39,7 +39,7 @@ class Measure {
     void setValue(int key, double value);
     std::map<int, double> getAll();
     int size();
-
+    double getAverage();
     friend bool operator==(const Measure &lhs, const Measure &rhs);
 };
 

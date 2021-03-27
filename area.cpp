@@ -21,7 +21,7 @@
 #include <map>
 #include <algorithm>
 
-#include <regex>// might not be allowed 
+#include <regex>
 
 #include <ostream> //probs not needed later
 #include <iostream>
