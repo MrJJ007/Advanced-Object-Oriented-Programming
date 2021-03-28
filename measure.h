@@ -42,7 +42,7 @@ class Measure {
     double getDifference();
     double getDifferenceAsPercentage();
     double getAverage();
-    friend std::ostream& operator<<(std::ostream os,const Measure measure);
+    friend std::ostream& operator<<(std::ostream& os,Measure measure);
     friend bool operator==(const Measure &lhs, const Measure &rhs);
 };
 

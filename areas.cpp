@@ -24,7 +24,7 @@
 #include <stdexcept>
 #include <tuple>
 #include <unordered_set>
-
+#include <typeinfo>
 #include <sstream>
 
 #include "lib_json.hpp"
@@ -135,6 +135,13 @@ Area& Areas::getArea(std::string localAuthorityCode){
   
 }
 
+std::map<std::string, Area> Areas::getAllAreas(){
+  std::map<std::string, Area> map;
+  for (auto const& x : this->areasContainer){
+    map.emplace(x.first,x.second);
+  }
+  return map;
+}
 /*
   TODO: Areas::size()
 
@@ -351,27 +358,46 @@ void Areas::populateFromWelshStatsJSON(
     const StringFilterSet * const areasFilter,
     const StringFilterSet * const measuresFilter,
     const YearFilterTuple * const yearsFilter){
-
       json j;
       is >> j;
-
       for (auto& el : j["value"].items()) {
-        auto &data = el.value();
-        //area
-        std::string localAuthorityCode = data["Localauthority_Code"];
-        std::string localAuthorityNameEng = data["Localauthority_ItemName_ENG"];
 
+        if(el.value() == NULL){
+          continue;
+        }
+        auto &data = el.value();
+
+        //area cols.at()
+        std::string localAuthorityCode = data[cols.at(BethYw::AUTH_CODE)];
+        std::string localAuthorityNameEng = data[cols.at(BethYw::AUTH_NAME_ENG)];
         unsigned int startFilterYearUS = std::get<0>(*yearsFilter);
         unsigned int endFilterYearUS = std::get<1>(*yearsFilter);
 
         int startFilterYear = (int) startFilterYearUS;
         int endFilterYear = (int) endFilterYearUS;
         //measures
-        double measureData = data["Data"];
-        std::string measureCode = data["Measure_Code"];
-        std::string measureLabel = data["Measure_ItemName_ENG"];
-        std::string measureYear = data["Year_Code"];
-
+        
+        auto measureData = data[cols.at(BethYw::VALUE)];
+        //std::cout<<" bif ";
+        //auto temp = data[cols.at(BethYw::VALUE)];
+        //std::cout<<typeid(temp).name();
+        // if(!isdigit(measureData)){
+        //   std::cout<<" if ";
+        //   std::string tempMeasureData = data[cols.at(BethYw::VALUE)];
+        //   measureData = std::stod(tempMeasureData);
+        // }else{
+        //   std::cout<<" else ";
+        //   measureData = data[cols.at(BethYw::VALUE)];
+        // }
+        //if()
+        std::cout<<typeid(measureData).name();
+        //std::cout<<" a ";
+        std::string measureCode = data[cols.at(BethYw::MEASURE_CODE)];
+        //std::cout<<" b ";
+        std::string measureLabel = data[cols.at(BethYw::MEASURE_NAME)];
+        //std::cout<<" c ";
+        std::string measureYear = data[cols.at(BethYw::YEAR)];
+        //std::cout<<" 2 ";
         int convertMeasureYear = stoi(measureYear);
 
         transform(measureCode.begin(), measureCode.end(), measureCode.begin(), ::tolower);
@@ -667,12 +693,14 @@ void Areas::populate(
     const StringFilterSet * const measuresFilter,
     const YearFilterTuple * const yearsFilter)
      {
-  if (type == BethYw::AuthorityCodeCSV) {
+  if (type == BethYw::AuthorityByYearCSV) {
     populateFromAuthorityByYearCSV(is, cols, areasFilter,
                               measuresFilter,yearsFilter);
   }else if(type == BethYw::WelshStatsJSON){
     populateFromWelshStatsJSON(is,cols,areasFilter,
                               measuresFilter,yearsFilter);
+  }else if(type == BethYw::AuthorityCodeCSV){
+    populateFromAuthorityCodeCSV(is, cols);
   }else {
     throw std::runtime_error("Areas::populate: Unexpected data type");
   }
@@ -862,5 +890,11 @@ std::string Areas::toJSON() const {
     Areas areas();
     std::cout << areas << std::end;
 */
-
+std::ostream& operator<<(std::ostream &os, Areas areas){
+  auto Allareas = areas.getAllAreas();
+  for(const auto& x: Allareas){
+    os<<x.second;
+  }
+  return os;
+}
 

@@ -46,6 +46,7 @@ class Area {
     std::map<std::string, std::string> getAllNames();
     std::map<std::string, Measure> getAllMeasures();
 
+    friend std::ostream& operator<<(std::ostream &os, Area area);
     friend bool operator==(const Area& lhs, const Area& rhs);
 };
 

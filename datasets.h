@@ -106,7 +106,6 @@ struct InputFileSource {
   //   - the value is the name of the column in the data file
   const SourceColumnMapping COLS;
 };
-
 /*
   In this namespace, we store all the data for the various datasets that can
   be found in the datasets directory.
@@ -219,6 +218,7 @@ const InputFileSource COMPLETE_AREA = {
     {SINGLE_MEASURE_CODE, "Area"},
     {SINGLE_MEASURE_NAME, "Land area"}
   }
+
 }; // const InputFileSource COMPLETE_AREA
 
 constexpr size_t NUM_DATASETS = 7;

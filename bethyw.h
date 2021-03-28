@@ -72,9 +72,9 @@ void loadAreas(Areas areas,std::string dir,std::unordered_set<std::string> areas
 void loadDatasets(Areas areas,
       std::string dir,
       std::vector<BethYw::InputFileSource> datasetsToImport,
-      std::unordered_set<std::string> areasFilter,
-      std::unordered_set<std::string> measuresFilter,
-      std::tuple<int, int> yearsFilter);
+      StringFilterSet areasFilter,
+      StringFilterSet measuresFilter,
+      YearFilterTuple yearsFilter);
 //tuple parseYearsArg(args);
 
 } // namespace BethYw

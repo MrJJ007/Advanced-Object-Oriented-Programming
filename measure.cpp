@@ -326,7 +326,7 @@ double Measure::getAverage(){
     measure.setValue(1999, 12345678.9);
     std::cout << measure << std::end;
 */
-std::ostream& operator<<(std::ostream &os, Measure& measure){
+std::ostream& operator<<(std::ostream &os, Measure measure){
   auto values = measure.getAll();
   os<<measure.getLabel()<<" ("<<measure.getCodename()<<")\n";
   //column headers for output
@@ -334,15 +334,15 @@ std::ostream& operator<<(std::ostream &os, Measure& measure){
     os<<std::setw(10);
     os<<(x.first);
   }
-  os<<("\tAverage   Diff.  %Diff.\n");
+  os<<("Average")<<std::setw(10)<<("Diff.")<<std::setw(10)<<("%Diff.\n");
   //values for output
   for(const auto& x: values){
     os<<std::setw(10);
     os<<(x.second);
   }
-  os<<measure.getAverage();
-  os<<measure.getDifference();
-  os<<measure.getDifferenceAsPercentage();
+  os<<measure.getAverage()<<std::setw(10);
+  os<<measure.getDifference()<<std::setw(10);
+  os<<measure.getDifferenceAsPercentage()<<std::setw(10);
   return os;
 }
 

@@ -78,6 +78,7 @@ public:
       Area area);
   Area& getArea(
       std::string localAuthorityCode);
+  std::map<std::string, Area> getAllAreas();
   int size();
   void populateFromAuthorityCodeCSV(
       std::istream& is,
@@ -107,12 +108,13 @@ public:
       std::istream& is,
       const BethYw::SourceDataType& type,
       const BethYw::SourceColumnMapping& cols,
-      const StringFilterSet * const areasFilter = nullptr,
-      const StringFilterSet * const measuresFilter = nullptr,
-      const YearFilterTuple * const yearsFilter = nullptr)
+      const StringFilterSet * const areasFilter,
+      const StringFilterSet * const measuresFilter,
+      const YearFilterTuple * const yearsFilter)
       noexcept(false);
 
   std::string toJSON() const;
+  friend std::ostream& operator<<(std::ostream &os, Areas areas);
 };
 
 #endif // AREAS_H

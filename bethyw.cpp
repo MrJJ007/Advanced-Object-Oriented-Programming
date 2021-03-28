@@ -58,21 +58,19 @@
 */
 int BethYw::run(int argc, char *argv[]) {
   try{
-      auto cxxopts = BethYw::cxxoptsSetup();
-      auto args = cxxopts.parse(argc, argv);
+    auto cxxopts = BethYw::cxxoptsSetup();
+    auto args = cxxopts.parse(argc, argv);
   }catch(const std::exception& e) { // reference to the base of a polymorphic object
-     std::cout << e.what(); // information from length_error printed
+    std::cout << e.what(); // information from length_error printed
   }
   auto cxxopts = BethYw::cxxoptsSetup();
   auto args = cxxopts.parse(argc, argv);
-  
 
   // Print the help usage if requested
   if (args.count("help")) {
     std::cerr << cxxopts.help() << std::endl;
     return 0;
   }
-
   // Parse data directory argument
   std::string dir = args["dir"].as<std::string>() + DIR_SEP;
 
@@ -81,24 +79,24 @@ int BethYw::run(int argc, char *argv[]) {
   auto areasFilter      = BethYw::parseAreasArg(args);
   auto measuresFilter   = BethYw::parseMeasuresArg(args);
   auto yearsFilter      = BethYw::parseYearsArg(args);
-
   Areas data = Areas();
-
+  std::cout<<" 13";
   BethYw::loadAreas(data, dir, areasFilter);
-  
+  std::cout<<" 14";
   BethYw::loadDatasets(data,
                       dir,
                       datasetsToImport,
                       areasFilter,
                       measuresFilter,
                       yearsFilter);
-
+std::cout<<" 15";
   if (args.count("json")) {
     // The output as JSON
-    std::cout << data.toJSON() << std::endl;
+    //std::cout << data.toJSON() << std::endl;
   } else {
     // The output as tables
-     //std::cout << data << std::endl;
+      std::cout<<" 16";
+    std::cout << data << std::endl;
   }
 
   return 0;
@@ -197,12 +195,21 @@ std::vector<BethYw::InputFileSource> BethYw::parseDatasetsArg(
 
   // Create the container for the return type
   std::vector<InputFileSource> datasetsToImport;
-
-  auto inputDatasets = args["datasets"].as<std::vector<std::string>>();
+  std::vector<std::string> inputDatasets;
+  if(args["datasets"].count() >0){
+     inputDatasets = args["datasets"].as<std::vector<std::string>>();
+  }else{
+    inputDatasets.push_back("all");
+  }
+ 
+  
   std::vector<int>::size_type inputSize = inputDatasets.size();
+  
 
   int convertednumDatasets = static_cast<int>(numDatasets);
+  
   int convertedinputSize = static_cast<int>(inputSize);
+  
   // for checking states in which we dont procede to normal
   // input parsing
   for(int l = 0; l < convertedinputSize; l++){
@@ -270,7 +277,13 @@ std::unordered_set<std::string> BethYw::parseAreasArg(
   std::unordered_set<std::string> areas;
 
   // Retrieve the areas argument like so:
-  auto temp = args["areas"].as<std::vector<std::string>>();
+  std::vector<std::string> temp;
+  if(args["areas"].count() >0){
+     temp = args["areas"].as<std::vector<std::string>>();
+  }else{
+    temp.push_back("all");
+  }
+  //auto temp = args["areas"].as<std::vector<std::string>>();
   std::vector<int>::size_type inputSize = temp.size();
 
   int convertedinputSize = static_cast<int>(inputSize);
@@ -316,8 +329,13 @@ std::unordered_set<std::string> BethYw::parseMeasuresArg(
     cxxopts::ParseResult& args){
 
   std::unordered_set<std::string> measures;
-
-  auto temp = args["measures"].as<std::vector<std::string>>();
+  std::vector<std::string> temp;
+  if(args["measures"].count() >0){
+     temp = args["measures"].as<std::vector<std::string>>();
+  }else{
+    temp.push_back("all");
+  }
+  
   std::vector<int>::size_type inputSize = temp.size();
 
   int convertedinputSize = static_cast<int>(inputSize);
@@ -359,7 +377,15 @@ std::unordered_set<std::string> BethYw::parseMeasuresArg(
     the message: Invalid input for years argument
 */
 std::tuple<int,int> BethYw::parseYearsArg(cxxopts::ParseResult& args){
-  auto temp = args["years"].as<std::string>();
+
+    std::string temp;
+    if(args["years"].count() >0){
+      temp = args["years"].as<std::string>();
+    }else{
+      return std::make_tuple(0,0);
+    }
+
+  
   std::vector<int>::size_type yearsSize = temp.size();
   int convertedYearsSize = static_cast<int>(yearsSize);
 
@@ -461,46 +487,17 @@ bool BethYw::is_number(const std::string& s)
 */
 void BethYw::loadAreas(Areas areas,std::string dir,std::unordered_set<std::string> areasFilter){
 
+  dir = "..\\"+dir+"areas.csv";
+    //std::cout<<dir;
   InputFile input(dir);
-  input.getSource() == dir;
   std::istream &stream = input.open();
-  //SourceColumnMapping cols;
-  for(const auto & x: areasFilter){
-    
-  }
-  //A value from the BethYw::SourceDataType enum which states the underlying data file structure
+
+  // we can do this because we know this function will only read the areas.csv file
   SourceDataType datatype = AuthorityCodeCSV;
-  //auto stuff = input.getSource();
-  auto cols = InputFiles::AREAS.COLS;
-  areas.populate(stream,datatype,cols);
+
+  areas.populate(stream,datatype,BethYw::InputFiles::AREAS.COLS);
   
-  /*
-     InputFile input(test_file);
-     input.getSource() == test_file
-      std::istream &stream = input.open();
-  */
 
-  // file.open("dir");
-  // std::cout<<"yoot";
-  //   InputFile input("data/popu1009.json");
-  //   auto is = input.open();
-
-  //   auto cols = InputFiles::DATASETS["popden"].COLS;
-
-  //   auto areasFilter = BethYw::parseAreasArg();
-  //   auto measuresFilter = BethYw::parseMeasuresArg();
-  //   auto yearsFilter = BethYw::parseMeasuresArg();
-
-  //   Areas data = Areas();
-  //   areas.populate(
-  //     is,
-  //     DataType::WelshStatsJSON,
-  //     cols,
-  //     &areasFilter,
-  //     &measuresFilter,
-  //     &yearsFilter);
-  // Areas::populate(file,,);
-  // InputFile file;
 };
 
 /*
@@ -560,11 +557,38 @@ void BethYw::loadAreas(Areas areas,std::string dir,std::unordered_set<std::strin
 void BethYw::loadDatasets(
       Areas areas,
       std::string dir,
-      std::vector<BethYw::InputFileSource> datasetsToImport,
-      std::unordered_set<std::string> areasFilter,
-      std::unordered_set<std::string> measuresFilter,
-      std::tuple<int, int> yearsFilter){
+      const std::vector<BethYw::InputFileSource> datasetsToImport,
+      StringFilterSet areasFilter,
+      StringFilterSet measuresFilter,
+      YearFilterTuple yearsFilter){
+        for(auto const & x :datasetsToImport){
+          std::string temp = dir;
+          temp = "..\\"+temp+x.FILE;
+          std::cout<<x.FILE<<" ";
 
+          InputFile input(temp);
+          std::istream &stream = input.open();
+
+          std::string filename = x.FILE;
+
+          std::unordered_map<BethYw::SourceColumn, std::string> map;
+          for(auto const&y:x.COLS){
+            map.emplace(y.first, y.second);
+          }
+          //std::unordered_set<std::string> fred,freddy;
+          //SourceDataType datatype = AuthorityCodeCSV;
+          //SourceDataType datatype = x.PARSER;
+          areas.populate(stream,x.PARSER,map,
+          &areasFilter,&measuresFilter,&yearsFilter);
+          //areas.populate();
+          //std::cout<<" fred ";
+        }
 }
-
-
+/*
+std::istream, 
+const BethYw::SourceDataType, 
+const BethYw::SourceColumnMapping, 
+std::unordered_set<std::string, std::hash<std::string>, std::equal_to<std::string>,std::allocator<std::string>>, 
+std::unordered_set<std::string, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::string>>,
+std::tuple<int, int>
+*/

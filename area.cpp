@@ -298,7 +298,7 @@ std::map<std::string, Measure> Area::getAllMeasures(){
     area.setName("eng", "Powys");
     std::cout << area << std::endl;
 */
-std::ostream& operator<<(std::ostream &os, Area& area){
+std::ostream& operator<<(std::ostream &os, Area area){
   auto names = area.getAllNames();
   auto measures = area.getAllMeasures();
   for(const auto& x: names){
@@ -306,6 +306,11 @@ std::ostream& operator<<(std::ostream &os, Area& area){
     os<<" / ";
   }
   os<<area.getLocalAuthorityCode();
+  os<<"\n";
+  for(const auto& x: measures){
+    os<<x.second;
+  }
+
   //for(const auto& )
   //column headers for output
   // for(const auto& x: values){
