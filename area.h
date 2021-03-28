@@ -32,7 +32,6 @@
 class Area {
   private:
     std::string localAuthorityCode;
-    //std::string name;
     std::map <std::string, std::string> namesMap;
     std::map <std::string, Measure> measures;
   public:

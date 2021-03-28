@@ -93,14 +93,6 @@ std::string Area::getName(std::string langCode){
   }else{
     throw std::out_of_range("getName area FIND CORRECT ERROR MESSAGE"+ langCode);
   }
-  
-  // if(langCode == "eng"){
-  //   return namesMap.find("eng")->second;
-  // }else if(langCode == "cym"){
-  //   return namesMap.find("cym")->second;
-  // }else{
-  //   throw std::out_of_range("getName area FIND CORRECT ERROR MESSAGE");
-  // }
 }
 
 /*
@@ -131,18 +123,15 @@ std::string Area::getName(std::string langCode){
 void Area::setName(std::string lang, std::string name){
   int len = lang.length();
   transform(lang.begin(), lang.end(), lang.begin(), ::tolower);
+  //checking for non alphabetic char
   if(len == 3 && std::regex_match(lang, std::regex("^[A-Za-z]+$"))){
     if(namesMap.count(lang) > 0){
       namesMap.erase(lang);
     }
     namesMap.emplace(lang, name);
-  
-    
   }else{
     throw std::invalid_argument("Area::setName: Language code must be three alphabetical letters only");
   }
-  
- 
 }
 
 /*
@@ -170,21 +159,22 @@ void Area::setName(std::string lang, std::string name){
     auto measure2 = area.getMeasure("pop");
 */
 Measure& Area::getMeasure(std::string codename){
+  //changing codename to lower case
   transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
   if(measures.count(codename) > 0){
     return measures.find(codename)->second;
   }else{
-    //std::cout<<"yeet";
     throw std::out_of_range("No measure found matching " +codename);
   }
-  //No measure found matching dens
-  // try{
-  //   return measures.find(key)->second;
-  // }catch(std::exception e){
-  //   throw std::out_of_range("No measure found matching "+key);
-  // }
 }
-
+// this function just returns a bool wether the measure exists not a ref 
+bool Area::checkMeasure(std::string codename){
+  transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
+  if(this->measures.count(codename) > 0){
+    return true;
+  }
+  return false;
+}
 /*
   TODO: Area::setMeasure(codename, measure)
 
@@ -217,57 +207,21 @@ Measure& Area::getMeasure(std::string codename){
 
     area.setMeasure(codename, measure);
 */
-/*
-// if measure doesnt exist
-if(!area.checkMeasure(measureCode)){
-  Measure measure(measureCode, measureLabel);
-  measure.setValue(convertMeasureYear, measureData);
-  area.setMeasure(measureCode, measure);
-}else{
-  auto measure = area.getMeasure(measureCode);
-  measure.setValue(convertMeasureYear, measureData);
-  area.setMeasure(measureCode, measure);
-}
-*/
+
 void Area::setMeasure(std::string codename, Measure measure){
+  ////changing codename to lower case
   transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
   if(measures.count(codename) > 0){
-    Measure& existingMeasure = this->getMeasure(codename);//this->measures.find(codename);
-
+    //merging existing measure with new measure
+    Measure& existingMeasure = this->getMeasure(codename);
     std::map<int, double> newValues = measure.getAll();
     for (auto const& x : newValues){
       existingMeasure.setValue(x.first,x.second);
     }
-    //existingMeasure.setValue(key,value);
-    //int temp1;
-    //double temp2;
-
-    // for (const auto &s : measure){
-    //   temp1 = measure.first;
-    //   temp2= measure.second;
-    //   measure.setValue(temp1, temp2);
-    // }
-      
-    //measures.erase(codename);
-    //get all values from measure
-    //call setvalues 
   }
     measures.emplace(codename, measure);
 }
 
-bool Area::checkMeasure(std::string codename){
-  transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
-  //std::cout<<codename;
-
-  if(this->measures.count(codename) > 0){
-    //std::string temp = measures.find(codename)->first;
-    //std::cout<<" "<<temp<<" ";
-    //std::cout<<" true ";
-    return true;
-  }
-  //std::cout<<" false ";
-  return false;
-}
 /*
   TODO: Area::size()
 
@@ -297,7 +251,6 @@ int Area::size(){
   }else{
     return measures.size();
   }
-  
 }
 std::map<std::string, std::string> Area::getAllNames(){
   std::map<std::string, std::string> map;
@@ -345,7 +298,30 @@ std::map<std::string, Measure> Area::getAllMeasures(){
     area.setName("eng", "Powys");
     std::cout << area << std::endl;
 */
-
+std::ostream& operator<<(std::ostream &os, Area& area){
+  auto names = area.getAllNames();
+  auto measures = area.getAllMeasures();
+  for(const auto& x: names){
+    os<<x.second;
+    os<<" / ";
+  }
+  os<<area.getLocalAuthorityCode();
+  //for(const auto& )
+  //column headers for output
+  // for(const auto& x: values){
+  //   os<<("\t");
+  //   os<<(x->first);
+  // }
+  // os<<("\tAverage   Diff.  %Diff.\n")
+  // //values for output
+  // for(const auto& x: values){
+  //   os<<(x->second);
+  // }
+  // os<<(measure.getAverage());
+  // os<<(measure.getDifference());
+  // os<<(measure.getDifferenceAsPercentage());
+  return os;
+}
 
 /*
   TODO: operator==(lhs, rhs)

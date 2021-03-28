@@ -29,7 +29,7 @@ class Measure {
   private:
   std::string codename;
   std::string label;
-  std::map <int, double> values;// probas sohoulbe int anf double
+  std::map <int, double> values;
   public:
     Measure(std::string code, const std::string &label);
     std::string getCodename();
@@ -39,7 +39,10 @@ class Measure {
     void setValue(int key, double value);
     std::map<int, double> getAll();
     int size();
+    double getDifference();
+    double getDifferenceAsPercentage();
     double getAverage();
+    friend std::ostream& operator<<(std::ostream os,const Measure measure);
     friend bool operator==(const Measure &lhs, const Measure &rhs);
 };
 

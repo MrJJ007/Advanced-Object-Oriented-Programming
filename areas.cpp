@@ -28,11 +28,6 @@
 #include <sstream>
 
 #include "lib_json.hpp"
-#include "nlohmann/json.hpp"
-
-// for convenience
-using json = nlohmann::json;
-
 #include "datasets.h"
 #include "areas.h"
 #include "measure.h"
@@ -226,31 +221,22 @@ void Areas::populateFromAuthorityCodeCSV(
         while(getline(ss, line,',')){
           result.push_back(line);
         }
-      } 
-      //for(auto const& x: cols){
-        //std::cout<<x.second;
-      //}
+      }   
+      //std::cout<<cols.size();
       int sizeOfResult = static_cast<int>(result.size());
       // we know that starting from the 3rd element every 3rd element will be
       // an area code and then +1 from the code is the english name and 
       // +2 from the code is the welsh name
       
+      // i choose not to use cols to eliminate the column headers from as the
+      // columns will always be in the same order.
       for(int i =3;i<sizeOfResult-2;i=i+3){
-        //std::cout<<" Y ";
-        //std::cout<<result.at(i)<<i;
         auto localAuthorityCode = result.at(i);
-        
-        //std::unordered_set<std::string>::const_iterator got = areasFilter->find (localAuthorityCode);
-        //if(got != areasFilter->end() || areasFilter->empty()){
-          Area area(localAuthorityCode);
-          area.setName("eng", result.at(i+1));
-          area.setName("cym", result.at(i+2));
-          this->setArea(localAuthorityCode, area);
-          //std::cout<<" H ";
-        //}
-
+        Area area(localAuthorityCode);
+        area.setName("eng", result.at(i+1));
+        area.setName("cym", result.at(i+2));
+        this->setArea(localAuthorityCode, area);
       }
-      //std::cout<<" M ";
 }
 
 
@@ -391,7 +377,7 @@ void Areas::populateFromWelshStatsJSON(
         transform(measureCode.begin(), measureCode.end(), measureCode.begin(), ::tolower);
         std::unordered_set<std::string>::const_iterator got = areasFilter->find (localAuthorityCode);
         std::unordered_set<std::string>::const_iterator gotM = measuresFilter->find (measureCode);
-
+        // checking the filters
         if(got == areasFilter->end() && !areasFilter->empty()){
           continue;
         }
@@ -403,14 +389,14 @@ void Areas::populateFromWelshStatsJSON(
             continue;
           }
         }
-
+        // if area doenst exist yet
         if(areasContainer.count(localAuthorityCode) == 0){
           Area area(localAuthorityCode);
           area.setName("eng", localAuthorityNameEng);
           this->setArea(localAuthorityCode, area);
          }
         Area& area = getArea(localAuthorityCode);
-
+        // if measure doesnt exist for area
         if(!area.checkMeasure(measureCode)){
           Measure measure(measureCode, measureLabel);
           measure.setValue(convertMeasureYear, measureData);
@@ -421,6 +407,7 @@ void Areas::populateFromWelshStatsJSON(
           area.setMeasure(measureCode, measure);
         }
   }
+
 }
 
 
@@ -490,7 +477,42 @@ void Areas::populateFromWelshStatsJSON(
     std::runtime_error if a parsing error occurs (e.g. due to a malformed file)
     std::out_of_range if there are not enough columns in cols
 */
+void Areas::populateFromAuthorityByYearCSV(
+  std::istream &is, 
+  const BethYw::SourceColumnMapping &cols, 
+  const StringFilterSet * const areasFilter,
+  const StringFilterSet * const measuresFilter,
+  const YearFilterTuple * const yearsFilter){
+    // reading the csv into a stringstream, to put commas at the new lines
+    // then reading the stringstream into a vector using the commas as delimiters
+    std::string line;
+    std::vector<std::string> result;
+    while(getline(is, line)){
+      std::stringstream ss(line);
+      while(getline(ss, line,',')){
+        result.push_back(line);
+      }
+    }   
 
+    //cols.at(MEASURE_CODE)
+    //cols.at(BethYw::SourceColumn::SINGLE_MEASURE_CODE)
+
+    int numOfCols = cols.size();
+    int sizeOfResult = static_cast<int>(result.size());
+    // we know that starting from the 3rd element every 3rd element will be
+    // an area code and then +1 from the code is the english name and 
+    // +2 from the code is the welsh name
+    
+    // i choose not to use cols to eliminate the column headers from as the
+    // columns will always be in the same order.
+    for(int i =numOfCols;i<sizeOfResult-(numOfCols-1);i=i+numOfCols){
+      auto localAuthorityCode = result.at(i);
+      Area area(localAuthorityCode);
+      area.setName("eng", result.at(i+1));
+      area.setName("cym", result.at(i+2));
+      this->setArea(localAuthorityCode, area);
+    }
+}
 
 
 /*
@@ -550,7 +572,7 @@ void Areas::populate(std::istream &is,
                      const BethYw::SourceColumnMapping &cols) {
   if (type == BethYw::AuthorityCodeCSV) {
     populateFromAuthorityCodeCSV(is, cols);
-  } else {
+  }else {
     throw std::runtime_error("Areas::populate: Unexpected data type");
   }
 }
@@ -646,8 +668,12 @@ void Areas::populate(
     const YearFilterTuple * const yearsFilter)
      {
   if (type == BethYw::AuthorityCodeCSV) {
-    populateFromAuthorityCodeCSV(is, cols, areasFilter);
-  } else {
+    populateFromAuthorityByYearCSV(is, cols, areasFilter,
+                              measuresFilter,yearsFilter);
+  }else if(type == BethYw::WelshStatsJSON){
+    populateFromWelshStatsJSON(is,cols,areasFilter,
+                              measuresFilter,yearsFilter);
+  }else {
     throw std::runtime_error("Areas::populate: Unexpected data type");
   }
 }
@@ -727,7 +753,6 @@ void Areas::populate(
 */
 std::string Areas::toJSON() const {
   json j;
-  
   return j.dump();
 }
 

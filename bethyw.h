@@ -22,6 +22,7 @@
 #include "lib_cxxopts.hpp"
 
 #include "datasets.h"
+#include "areas.h"
 
 const char DIR_SEP =
 #ifdef _WIN32
@@ -67,9 +68,13 @@ std::unordered_set<std::string> parseMeasuresArg(cxxopts::ParseResult& args);
 std::tuple<int,int> parseYearsArg(cxxopts::ParseResult& args);
 
 bool is_number(const std::string& s);
-
-//void loadAreas(Area area,std::string dir,std::unordered_set<std::string> areasFilter);
-//loadAreas(data, dir, areasFilter);
+void loadAreas(Areas areas,std::string dir,std::unordered_set<std::string> areasFilter);
+void loadDatasets(Areas areas,
+      std::string dir,
+      std::vector<BethYw::InputFileSource> datasetsToImport,
+      std::unordered_set<std::string> areasFilter,
+      std::unordered_set<std::string> measuresFilter,
+      std::tuple<int, int> yearsFilter);
 //tuple parseYearsArg(args);
 
 } // namespace BethYw

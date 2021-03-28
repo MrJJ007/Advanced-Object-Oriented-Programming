@@ -86,12 +86,18 @@ public:
       noexcept(false);
 
   void populateFromWelshStatsJSON(
-    std::istream &is,
-    const BethYw::SourceColumnMapping &cols,
-    const StringFilterSet * const areasFilter,
-    const StringFilterSet * const measuresFilter,
-    const YearFilterTuple * const yearsFilter);
-
+      std::istream &is,
+      const BethYw::SourceColumnMapping &cols,
+      const StringFilterSet * const areasFilter,
+      const StringFilterSet * const measuresFilter,
+      const YearFilterTuple * const yearsFilter);
+    
+  void populateFromAuthorityByYearCSV(
+      std::istream &is, 
+      const BethYw::SourceColumnMapping &cols, 
+      const StringFilterSet * const areasFilter = nullptr,
+      const StringFilterSet * const measuresFilter = nullptr,
+      const YearFilterTuple * const yearsFilter = nullptr);
   void populate(
       std::istream& is,
       const BethYw::SourceDataType& type,

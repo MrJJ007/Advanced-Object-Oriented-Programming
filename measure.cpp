@@ -21,6 +21,7 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include "measure.h"
 
 /*
@@ -232,7 +233,11 @@ int Measure::size(){
     measure.setValue(2001, 12345679.9);
     auto diff = measure.getDifference(); // returns 1.0
 */
-
+double Measure::getDifference(){
+  double first = values.begin()->second;
+  double last = values.end()->second;
+  return last-first;
+}
 
 /*
   TODO: Measure::getDifferenceAsPercentage()
@@ -251,7 +256,14 @@ int Measure::size(){
     measure.setValue(2010, 12345679.9);
     auto diff = measure.getDifferenceAsPercentage();
 */
-
+double Measure::getDifferenceAsPercentage(){
+  double denominator = values.begin()->second;
+  double difference = this->getDifference();
+  if(denominator ==  0 || difference == 0){
+    return 0;
+  }
+  return difference/denominator;
+}
 
 /*
   TODO: Measure::getAverage()
@@ -314,7 +326,25 @@ double Measure::getAverage(){
     measure.setValue(1999, 12345678.9);
     std::cout << measure << std::end;
 */
-
+std::ostream& operator<<(std::ostream &os, Measure& measure){
+  auto values = measure.getAll();
+  os<<measure.getLabel()<<" ("<<measure.getCodename()<<")\n";
+  //column headers for output
+  for(const auto& x: values){
+    os<<std::setw(10);
+    os<<(x.first);
+  }
+  os<<("\tAverage   Diff.  %Diff.\n");
+  //values for output
+  for(const auto& x: values){
+    os<<std::setw(10);
+    os<<(x.second);
+  }
+  os<<measure.getAverage();
+  os<<measure.getDifference();
+  os<<measure.getDifferenceAsPercentage();
+  return os;
+}
 
 /*
   TODO: operator==(lhs, rhs)
@@ -334,10 +364,8 @@ double Measure::getAverage(){
 */
 
 bool operator==(const Measure& lhs, const Measure& rhs){
-    //std::string lhsname
     if(lhs.codename == rhs.codename && lhs.label == rhs.label && lhs.values == rhs.values){
-         return true;//std::equal(lhs.values.begin(), lhs.values.end(),
-        //        rhs.values.begin());// return true
+         return true;
     }
     return false;
 }
