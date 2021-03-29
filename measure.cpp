@@ -46,7 +46,6 @@
 Measure::Measure(std::string codename, const std::string &label) {
   this->codename = codename;
   this->label = label;
-  //throw std::logic_error("Measure::Measure() has not been implemented!");
 }
 
 /*
@@ -142,10 +141,8 @@ void Measure::setLabel(std::string label){
 */
 double Measure::getValue(int key){
   if(values.count(key) > 0){
-    //std::cout<<key<<" key "<< values.find(key)->second<<" ";
     return values.find(key)->second;
   }else{
-    //std::cout<<key<<" else ";
     throw std::out_of_range("No value found for year "+std::to_string(key));
   }
 }
@@ -176,10 +173,7 @@ double Measure::getValue(int key){
 void Measure::setValue(int key, double value){
   if(values.count(key) > 0){
     values.erase(key);
-    //measures.insert(pair<std::string, Measure>(codename, measure));
   }
-    //measures.insert(pair<std::string, Measure>(codename, measure));
-    //values.insert({key, value});
     values.emplace(key, value);
   
 }
@@ -210,9 +204,6 @@ std::map<int, double> Measure::getAll(){
     auto size = measure.size(); // returns 1
 */
 int Measure::size(){
-  //for (auto const& x : this->values){
-      //std::cout<<x.first;
-    //}
   return this->values.size();
 }
 
@@ -343,6 +334,7 @@ std::ostream& operator<<(std::ostream &os, Measure measure){
   os<<measure.getAverage()<<std::setw(10);
   os<<measure.getDifference()<<std::setw(10);
   os<<measure.getDifferenceAsPercentage()<<std::setw(10);
+  os<<"\n";
   return os;
 }
 

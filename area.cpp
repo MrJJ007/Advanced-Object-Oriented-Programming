@@ -42,7 +42,6 @@
 */
 Area::Area(const std::string& localAuthorityCode) {
   this->localAuthorityCode = localAuthorityCode;
-  //throw std::logic_error("Area::Area() has not been implemented!");
 }
 
 /*
@@ -209,7 +208,7 @@ bool Area::checkMeasure(std::string codename){
 */
 
 void Area::setMeasure(std::string codename, Measure measure){
-  ////changing codename to lower case
+  //changing codename to lower case
   transform(codename.begin(), codename.end(), codename.begin(), ::tolower);
   if(measures.count(codename) > 0){
     //merging existing measure with new measure
@@ -310,21 +309,6 @@ std::ostream& operator<<(std::ostream &os, Area area){
   for(const auto& x: measures){
     os<<x.second;
   }
-
-  //for(const auto& )
-  //column headers for output
-  // for(const auto& x: values){
-  //   os<<("\t");
-  //   os<<(x->first);
-  // }
-  // os<<("\tAverage   Diff.  %Diff.\n")
-  // //values for output
-  // for(const auto& x: values){
-  //   os<<(x->second);
-  // }
-  // os<<(measure.getAverage());
-  // os<<(measure.getDifference());
-  // os<<(measure.getDifferenceAsPercentage());
   return os;
 }
 

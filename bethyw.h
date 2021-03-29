@@ -68,8 +68,8 @@ std::unordered_set<std::string> parseMeasuresArg(cxxopts::ParseResult& args);
 std::tuple<int,int> parseYearsArg(cxxopts::ParseResult& args);
 
 bool is_number(const std::string& s);
-void loadAreas(Areas areas,std::string dir,std::unordered_set<std::string> areasFilter);
-void loadDatasets(Areas areas,
+void loadAreas(Areas& areas,std::string dir,std::unordered_set<std::string> areasFilter);
+void loadDatasets(Areas& areas,
       std::string dir,
       std::vector<BethYw::InputFileSource> datasetsToImport,
       StringFilterSet areasFilter,

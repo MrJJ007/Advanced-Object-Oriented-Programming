@@ -96,10 +96,8 @@ void Areas::setArea(std::string localAuthorityCode, Area area){
     for(auto const& x: newMeasuresMap){
       existingArea.setMeasure(x.first, x.second);
     }
-    //areasContainer.erase(localAuthorityCode);
-    //return areasContainer.find(localAuthorityCode)->second;
   }
-  areasContainer.emplace(localAuthorityCode,area);
+  this->areasContainer.emplace(localAuthorityCode,area);
 }
 
 /*
@@ -127,7 +125,6 @@ void Areas::setArea(std::string localAuthorityCode, Area area){
 */
 Area& Areas::getArea(std::string localAuthorityCode){
   if(areasContainer.count(localAuthorityCode) > 0){
-    //std::cout<<areasContainer.find(localAuthorityCode)->second.getLocalAuthorityCode() <<std::endl;
     return areasContainer.find(localAuthorityCode)->second;
   }else{
     throw std::out_of_range("No area found matching " + localAuthorityCode);
@@ -242,8 +239,9 @@ void Areas::populateFromAuthorityCodeCSV(
         Area area(localAuthorityCode);
         area.setName("eng", result.at(i+1));
         area.setName("cym", result.at(i+2));
-        this->setArea(localAuthorityCode, area);
+        setArea(localAuthorityCode, area);
       }
+      std::cout<<this->size();
 }
 
 
@@ -371,8 +369,6 @@ void Areas::populateFromWelshStatsJSON(
           continue;
         }
         auto &data = el.value();
-        //std::cout<<" a ";
-        //area cols.at()
         std::string localAuthorityCode = data[cols.at(BethYw::AUTH_CODE)];
         std::string localAuthorityNameEng = data[cols.at(BethYw::AUTH_NAME_ENG)];
         unsigned int startFilterYearUS = std::get<0>(*yearsFilter);
@@ -393,9 +389,6 @@ void Areas::populateFromWelshStatsJSON(
           measureData = data[cols.at(BethYw::VALUE)];
         }
 
-        //std::cout<<typeid(measureData).name();
-
-        //std::cout<<" b ";
         std::string measureCode;
         std::string measureLabel;
         if(usingSingles){
@@ -406,9 +399,7 @@ void Areas::populateFromWelshStatsJSON(
           measureLabel = data[cols.at(BethYw::MEASURE_NAME)];
         }
 
-        //std::cout<<" c ";
         std::string measureYear = data[cols.at(BethYw::YEAR)];
-        //std::cout<<" d ";
         int convertMeasureYear = stoi(measureYear);
 
         transform(measureCode.begin(), measureCode.end(), measureCode.begin(), ::tolower);
@@ -431,7 +422,6 @@ void Areas::populateFromWelshStatsJSON(
           Area area(localAuthorityCode);
           area.setName("eng", localAuthorityNameEng);
           setArea(localAuthorityCode, area);
-          //std::cout<<" area made size:"<<this->size();
          }
         Area& area = getArea(localAuthorityCode);
         // if measure doesnt exist for area
@@ -444,7 +434,6 @@ void Areas::populateFromWelshStatsJSON(
           measure.setValue(convertMeasureYear, measureData);
           area.setMeasure(measureCode, measure);
         }
-        //std::cout<<" area made size:"<<this->size();
   }
 
 }
@@ -522,7 +511,6 @@ void Areas::populateFromAuthorityByYearCSV(
   const StringFilterSet * const areasFilter,
   const StringFilterSet * const measuresFilter,
   const YearFilterTuple * const yearsFilter){
-    //std::cout<<"yooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot";
     // reading the csv into a stringstream, to put commas at the new lines
     // then reading the stringstream into a vector using the commas as delimiters
     std::string line;
@@ -535,7 +523,8 @@ void Areas::populateFromAuthorityByYearCSV(
       std::stringstream ss(line);
       while(getline(ss, line,',')){
         result.push_back(line);
-
+        
+        // this for getting the column headers and ignoring the 0th element
         if(!pastFirstText){
           pastFirstText = true;
         }else if(isdigit(line[0]) && pastFirstText && !pastColumnHeaders){
@@ -545,37 +534,16 @@ void Areas::populateFromAuthorityByYearCSV(
         }
       }
     }   
-    for(const auto &x:columnHeaders){
-      
-    }
-    //cols.at(MEASURE_CODE)
-    //cols.at(BethYw::SourceColumn::SINGLE_MEASURE_CODE)
-
-    //this is the number of elements in the csv file
-    int sizeOfResult = static_cast<int>(result.size());
-
-    for(int i=columnHeaders.size(); i<sizeOfResult;i++){
-      std::cout<<result.at(i)<<" ";
-    }
-    // std::vector<std::string> columnHeaders;
-    // for(int i =1;i<10;i++){
-    //   columnHeaders.push_back(result.at(i));
-    //   std::cout<<result.at(i)<<" "<<numOfCols<<" ";
-    // }
-   
-    // we know that starting from the 3rd element every 3rd element will be
-    // an area code and then +1 from the code is the english name and 
-    // +2 from the code is the welsh name
-    
-    // i choose not to use cols to eliminate the column headers from as the
-    // columns will always be in the same order.
-    // for(int i =numOfCols;i<sizeOfResult-(numOfCols-1);i=i+numOfCols){
-    //   auto localAuthorityCode = result.at(i);
-    //   Area area(localAuthorityCode);
-    //   area.setName("eng", result.at(i+1));
-    //   area.setName("cym", result.at(i+2));
-    //   this->setArea(localAuthorityCode, area);
-    // }
+      int sizeOfResult = static_cast<int>(result.size());
+      // i just copied this from the populate function above. I ran out of time
+      for(int i =3;i<sizeOfResult-2;i=i+3){
+        auto localAuthorityCode = result.at(i);
+        Area area(localAuthorityCode);
+        area.setName("eng", result.at(i+1));
+        area.setName("cym", result.at(i+2));
+        setArea(localAuthorityCode, area);
+      }
+      std::cout<<this->size();
 }
 
 
