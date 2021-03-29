@@ -358,6 +358,11 @@ void Areas::populateFromWelshStatsJSON(
     const StringFilterSet * const areasFilter,
     const StringFilterSet * const measuresFilter,
     const YearFilterTuple * const yearsFilter){
+      // checking if the which format of names and codes we are using
+      bool usingSingles = true;
+      if(cols.count(BethYw::MEASURE_CODE)>0){
+        usingSingles = false;
+      }
       json j;
       is >> j;
       for (auto& el : j["value"].items()) {
@@ -366,7 +371,7 @@ void Areas::populateFromWelshStatsJSON(
           continue;
         }
         auto &data = el.value();
-
+        //std::cout<<" a ";
         //area cols.at()
         std::string localAuthorityCode = data[cols.at(BethYw::AUTH_CODE)];
         std::string localAuthorityNameEng = data[cols.at(BethYw::AUTH_NAME_ENG)];
@@ -375,35 +380,41 @@ void Areas::populateFromWelshStatsJSON(
 
         int startFilterYear = (int) startFilterYearUS;
         int endFilterYear = (int) endFilterYearUS;
-        //measures
-        
-        auto measureData = data[cols.at(BethYw::VALUE)];
-        //std::cout<<" bif ";
-        //auto temp = data[cols.at(BethYw::VALUE)];
-        //std::cout<<typeid(temp).name();
-        // if(!isdigit(measureData)){
-        //   std::cout<<" if ";
-        //   std::string tempMeasureData = data[cols.at(BethYw::VALUE)];
-        //   measureData = std::stod(tempMeasureData);
-        // }else{
-        //   std::cout<<" else ";
-        //   measureData = data[cols.at(BethYw::VALUE)];
-        // }
-        //if()
-        std::cout<<typeid(measureData).name();
-        //std::cout<<" a ";
-        std::string measureCode = data[cols.at(BethYw::MEASURE_CODE)];
+
+
+        //measures, we need to check if the value in the json is a string or number
+        auto measureDataJSON = data[cols.at(BethYw::VALUE)];
+        double measureData;
+        std::string measureDataString;
+        if(measureDataJSON.is_string()){
+          measureDataString = data[cols.at(BethYw::VALUE)];
+          measureData = std::stod(measureDataString);
+        }else{
+          measureData = data[cols.at(BethYw::VALUE)];
+        }
+
+        //std::cout<<typeid(measureData).name();
+
         //std::cout<<" b ";
-        std::string measureLabel = data[cols.at(BethYw::MEASURE_NAME)];
+        std::string measureCode;
+        std::string measureLabel;
+        if(usingSingles){
+          measureCode = cols.at(BethYw::SINGLE_MEASURE_CODE);
+          measureLabel = cols.at(BethYw::SINGLE_MEASURE_NAME);
+        }else{
+          measureCode = data[cols.at(BethYw::MEASURE_CODE)];
+          measureLabel = data[cols.at(BethYw::MEASURE_NAME)];
+        }
+
         //std::cout<<" c ";
         std::string measureYear = data[cols.at(BethYw::YEAR)];
-        //std::cout<<" 2 ";
+        //std::cout<<" d ";
         int convertMeasureYear = stoi(measureYear);
 
         transform(measureCode.begin(), measureCode.end(), measureCode.begin(), ::tolower);
         std::unordered_set<std::string>::const_iterator got = areasFilter->find (localAuthorityCode);
         std::unordered_set<std::string>::const_iterator gotM = measuresFilter->find (measureCode);
-        // checking the filters
+        // checking the filters 
         if(got == areasFilter->end() && !areasFilter->empty()){
           continue;
         }
@@ -419,7 +430,8 @@ void Areas::populateFromWelshStatsJSON(
         if(areasContainer.count(localAuthorityCode) == 0){
           Area area(localAuthorityCode);
           area.setName("eng", localAuthorityNameEng);
-          this->setArea(localAuthorityCode, area);
+          setArea(localAuthorityCode, area);
+          //std::cout<<" area made size:"<<this->size();
          }
         Area& area = getArea(localAuthorityCode);
         // if measure doesnt exist for area
@@ -432,6 +444,7 @@ void Areas::populateFromWelshStatsJSON(
           measure.setValue(convertMeasureYear, measureData);
           area.setMeasure(measureCode, measure);
         }
+        //std::cout<<" area made size:"<<this->size();
   }
 
 }
@@ -509,35 +522,60 @@ void Areas::populateFromAuthorityByYearCSV(
   const StringFilterSet * const areasFilter,
   const StringFilterSet * const measuresFilter,
   const YearFilterTuple * const yearsFilter){
+    //std::cout<<"yooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot";
     // reading the csv into a stringstream, to put commas at the new lines
     // then reading the stringstream into a vector using the commas as delimiters
     std::string line;
     std::vector<std::string> result;
+    //this is a container of the years 
+    std::vector<int> columnHeaders;
+    bool pastFirstText = false;
+    bool pastColumnHeaders = false;
     while(getline(is, line)){
       std::stringstream ss(line);
       while(getline(ss, line,',')){
         result.push_back(line);
+
+        if(!pastFirstText){
+          pastFirstText = true;
+        }else if(isdigit(line[0]) && pastFirstText && !pastColumnHeaders){
+          columnHeaders.push_back(std::stoi(line));
+        }else if(!isdigit(line[0]) && pastFirstText){
+          pastColumnHeaders = true;
+        }
       }
     }   
-
+    for(const auto &x:columnHeaders){
+      
+    }
     //cols.at(MEASURE_CODE)
     //cols.at(BethYw::SourceColumn::SINGLE_MEASURE_CODE)
 
-    int numOfCols = cols.size();
+    //this is the number of elements in the csv file
     int sizeOfResult = static_cast<int>(result.size());
+
+    for(int i=columnHeaders.size(); i<sizeOfResult;i++){
+      std::cout<<result.at(i)<<" ";
+    }
+    // std::vector<std::string> columnHeaders;
+    // for(int i =1;i<10;i++){
+    //   columnHeaders.push_back(result.at(i));
+    //   std::cout<<result.at(i)<<" "<<numOfCols<<" ";
+    // }
+   
     // we know that starting from the 3rd element every 3rd element will be
     // an area code and then +1 from the code is the english name and 
     // +2 from the code is the welsh name
     
     // i choose not to use cols to eliminate the column headers from as the
     // columns will always be in the same order.
-    for(int i =numOfCols;i<sizeOfResult-(numOfCols-1);i=i+numOfCols){
-      auto localAuthorityCode = result.at(i);
-      Area area(localAuthorityCode);
-      area.setName("eng", result.at(i+1));
-      area.setName("cym", result.at(i+2));
-      this->setArea(localAuthorityCode, area);
-    }
+    // for(int i =numOfCols;i<sizeOfResult-(numOfCols-1);i=i+numOfCols){
+    //   auto localAuthorityCode = result.at(i);
+    //   Area area(localAuthorityCode);
+    //   area.setName("eng", result.at(i+1));
+    //   area.setName("cym", result.at(i+2));
+    //   this->setArea(localAuthorityCode, area);
+    // }
 }
 
 

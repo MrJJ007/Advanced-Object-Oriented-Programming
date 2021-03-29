@@ -82,21 +82,21 @@ int BethYw::run(int argc, char *argv[]) {
   Areas data = Areas();
   std::cout<<" 13";
   BethYw::loadAreas(data, dir, areasFilter);
-  std::cout<<" 14";
+
   BethYw::loadDatasets(data,
                       dir,
                       datasetsToImport,
                       areasFilter,
                       measuresFilter,
                       yearsFilter);
-std::cout<<" 15";
   if (args.count("json")) {
     // The output as JSON
-    //std::cout << data.toJSON() << std::endl;
+    std::cout << data.toJSON() << std::endl;
   } else {
     // The output as tables
-      std::cout<<" 16";
-    std::cout << data << std::endl;
+    
+      std::cout<<" trying to print";
+    std::cout <<"size: "<< data.size() <<"data: "<<data<< std::endl;
   }
 
   return 0;
@@ -350,7 +350,7 @@ std::unordered_set<std::string> BethYw::parseMeasuresArg(
     measures.insert(temp[l]);
   }
   return measures;
-};
+}
 
 /*
  BethYw::parseYearsArg(args)
@@ -434,7 +434,7 @@ std::tuple<int,int> BethYw::parseYearsArg(cxxopts::ParseResult& args){
   }else{
     throw std::invalid_argument("Invalid input for years argument");
   }
-};
+}
 // this should probs be in a different class but whatever
 bool BethYw::is_number(const std::string& s)
 {
@@ -498,7 +498,7 @@ void BethYw::loadAreas(Areas areas,std::string dir,std::unordered_set<std::strin
   areas.populate(stream,datatype,BethYw::InputFiles::AREAS.COLS);
   
 
-};
+}
 
 /*
   TODO: BethYw::loadDatasets(areas,
